@@ -38,22 +38,22 @@ fn main() {
     let mut server_manager = ServerManager::default();
     let mut credential_manager = CredentialManager::default();
 
-    parse_config_hash(config[0]["hosts"].as_vec().unwrap(), &mut server_manager, |s| {
-        let users: Vec<String> = s["Users"].as_vec().unwrap()
-            .into_iter()
-            .map(|u| u.as_str().unwrap().to_owned())
-            .collect();
+    for group in config[0]["groups"].as_vec().unwrap() {
+        parse_config_hash(group["Hosts"].as_vec().unwrap(), &mut server_manager, |s| {
+            let users: Vec<String> = s["Users"].as_vec().unwrap()
+                .into_iter()
+                .map(|u| u.as_str().unwrap().to_owned())
+                .collect();
 
-        Server::with(
-            s["Name"].as_str().unwrap().to_owned(), 
-            s["HostName"].as_str().unwrap().to_owned(),
-            s["Port"].as_i64().unwrap() as u32,
-            users,
-            s["Group"].as_str().unwrap().to_owned()
-        )
-    });
-
-    
+            Server::with(
+                s["Name"].as_str().unwrap().to_owned(), 
+                s["HostName"].as_str().unwrap().to_owned(),
+                s["Port"].as_i64().unwrap() as u32,
+                users,
+                group["Name"].as_str().unwrap().to_owned(),
+            )
+        });
+    }
     
     parse_config_hash(config[0]["credentials"].as_vec().unwrap(), &mut credential_manager, |c| {
         let user = c["User"].as_str().unwrap().to_owned();

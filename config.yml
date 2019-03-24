@@ -7,22 +7,25 @@ credentials:
     -
         User: pi
 
-hosts:
+groups:
     -
-        Name: pollux
-        HostName: pollux.chaoshome.local
-        Port: 22
-        Users: [osadmin]
-        Group: chaoshome
+        Name: chaoshome
+        Hosts:
+            -
+                Name: pollux
+                HostName: pollux.chaoshome.local
+                Port: 22
+                Users: [osadmin]
+            -
+                Name: pihole
+                HostName: pirategate.chaoshome.local
+                Port: 22
+                Users: [pi]
     -
-        Name: pihole
-        HostName: pirategate.chaoshome.local
-        Port: 22
-        Users: [pi]
-        Group: chaoshome
-    -
-        Name: stdvm-01
-        HostName: stdvm-01.srv.stdpixel.com
-        Port: 22
-        Users: [osadmin]
-        Group: stdpixel
+        Name: stdpixel
+        Hosts:
+            -
+                Name: stdvm-01
+                HostName: stdvm-01.srv.stdpixel.com
+                Port: 22
+                Users: [osadmin]
