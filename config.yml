@@ -12,14 +12,17 @@ hosts:
         Name: pollux
         HostName: pollux.chaoshome.local
         Port: 22
-        users: [osadmin]
+        Users: [osadmin]
+        Group: chaoshome
     -
         Name: pihole
         HostName: pirategate.chaoshome.local
         Port: 22
-        users: [pi]
+        Users: [pi]
+        Group: chaoshome
     -
         Name: stdvm-01
         HostName: stdvm-01.srv.stdpixel.com
         Port: 22
-        users: [osadmin]
+        Users: [osadmin]
+        Group: stdpixel

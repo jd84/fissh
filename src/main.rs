@@ -1,6 +1,8 @@
 extern crate clap;
 extern crate yaml_rust;
 
+mod server;
+
 use clap::{Arg, App};
 use yaml_rust::{Yaml, YamlLoader};
 
@@ -8,28 +10,7 @@ use std::fs::File;
 use std::process::{Command};
 use std::io::{Read};
 
-#[derive(Debug)]
-struct Server {
-    name: String,
-    host: String,
-    port: u32,
-    users: Vec<String>,
-}
-
-#[derive(Debug)]
-enum Auth {
-    Key(String),
-    Password,
-}
-
-#[derive(Debug)]
-struct Credential {
-    user: String,
-    auth: Auth,
-}
-
-type Servers = Vec<Server>;
-type Credentials = Vec<Credential>;
+use server::{ServerManager, Server, CredentialManager, Account, Auth, Manager};
 
 fn main() {
     let matches = App::new("fissh")
@@ -54,43 +35,45 @@ fn main() {
     let config_file = matches.value_of("config").unwrap_or("config.yml");
     let config = YamlLoader::load_from_str(&config_to_string(config_file)).unwrap();
 
-    let mut servers = Servers::new();
-    let mut credientials = Credentials::new();
-    
-    parse_config_hash(config[0]["hosts"].as_vec().unwrap(), &mut servers, |s| {
-        let users: Vec<String> = s["users"].as_vec().unwrap()
+    let mut server_manager = ServerManager::default();
+    let mut credential_manager = CredentialManager::default();
+
+    parse_config_hash(config[0]["hosts"].as_vec().unwrap(), &mut server_manager, |s| {
+        let users: Vec<String> = s["Users"].as_vec().unwrap()
             .into_iter()
             .map(|u| u.as_str().unwrap().to_owned())
             .collect();
 
-        Server {
-            name: s["Name"].as_str().unwrap().to_owned(),
-            host: s["HostName"].as_str().unwrap().to_owned(),
-            port: s["Port"].as_i64().unwrap() as u32,
-            users: users,
-        }
+        Server::with(
+            s["Name"].as_str().unwrap().to_owned(), 
+            s["HostName"].as_str().unwrap().to_owned(),
+            s["Port"].as_i64().unwrap() as u32,
+            users,
+            s["Group"].as_str().unwrap().to_owned()
+        )
     });
 
-    parse_config_hash(config[0]["credentials"].as_vec().unwrap(), &mut credientials, |c| {
-        let mut auth = Auth::Password;
+    
+    
+    parse_config_hash(config[0]["credentials"].as_vec().unwrap(), &mut credential_manager, |c| {
+        let user = c["User"].as_str().unwrap().to_owned();
+
         if let Some(file) = c["IdentityFile"].as_str() {
-            auth = Auth::Key(file.to_owned());
-        } 
-        Credential {
-            user: c["User"].as_str().unwrap().to_owned(),
-            auth: auth,
+            return Account::with_key(user, file.to_owned());
+        } else {
+            return Account::new(user);
         }
     });
 
     if matches.is_present("list") {
-        for server in &servers {
-            println!("{} ({})", server.name, server.host);
-        }
+        // for server in &servers {
+        //     println!("{} ({})", server.name, server.host);
+        // }
         std::process::exit(0);
     }
 
     if let Some(host) = matches.value_of("HOST") {
-        connect(&servers, &credientials, host);
+        connect(&server_manager, &credential_manager, host);
     }
     
     println!("Thanks for using fissh!");
@@ -103,27 +86,28 @@ fn config_to_string(path: &str) -> String {
     content
 }
 
-fn parse_config_hash<F, T>(data: &Vec<Yaml>, storage: &mut Vec<T>, f: F)
-    where F: Fn(&Yaml) -> T
+fn parse_config_hash<F, M, T>(data: &Vec<Yaml>, manager: &mut M, f: F)
+    where F: Fn(&Yaml) -> T,
+        M: Manager<Item=T>
 {
     for item in data {
-        storage.push(f(item));
+        manager.add(f(item));
     }
 }
 
-fn connect(servers: &Servers, accounts: &Credentials, name: &str) {
-    let server: &Server = servers.into_iter().filter(|s| s.name == name).collect::<Vec<_>>()[0];
-    let account: &Credential = accounts.into_iter().filter(|a| a.user == server.users[0]).collect::<Vec<_>>()[0];
+fn connect(servers: &ServerManager, accounts: &CredentialManager, name: &str) {
+    let server: &Server = servers.find(String::from(name));
+    let account: &Account = accounts.find(&server.users[0]);
 
-    println!("Start SSH for {} as {}", server.host, account.user);
+    println!("Start SSH for {} as {}", server.host, account.name);
     
     let mut args: Vec<&str> = Vec::new();
-    if let Auth::Key(ref file) = account.auth {
+    if let Auth::PublicKey(ref file) = account.auth {
         args.push("-i");
         args.push(file);
     }
 
-    let conn = format!("{}@{}", account.user, server.host);
+    let conn = format!("{}@{}", account.name, server.host);
     args.push(&conn);
 
     let mut ssh = Command::new("ssh")
