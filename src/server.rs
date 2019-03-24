@@ -32,6 +32,22 @@ pub struct CredentialManager {
     accounts: Vec<Account>,
 }
 
+pub struct ServerIter<'a> {
+    data: std::slice::Iter<'a, Server>,
+    curr: usize,
+}
+
+impl<'a> Iterator for ServerIter<'a> {
+    type Item = &'a Server;
+    fn next(&mut self) -> Option<&'a Server> {
+        while let Some(server) = self.data.next() {
+            self.curr += 1;
+            return Some(server);
+        }
+        None   
+    }
+} 
+
 impl Account {
     pub fn new(name: String) -> Self {
         Self {
@@ -76,6 +92,21 @@ impl ServerManager {
             }
         }
         panic!("No server found with name `{}`", name);
+    }
+
+    pub fn iter(&self, group: &str) -> ServerIter {
+        ServerIter {
+            data: self.servers.get(group).unwrap().iter(),
+            curr: 0,
+        }
+    }
+
+    pub fn groups(&self) -> Vec<String> {
+        let mut groups = Vec::with_capacity(self.servers.len());
+        for (group, _) in self.servers.iter() {
+            groups.push(group.clone());
+        }
+        groups
     }
 }
 

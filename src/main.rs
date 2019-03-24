@@ -66,9 +66,14 @@ fn main() {
     });
 
     if matches.is_present("list") {
-        // for server in &servers {
-        //     println!("{} ({})", server.name, server.host);
-        // }
+        for group in server_manager.groups().iter() {
+            println!("{}\n", group);
+            for server in server_manager.iter(group) {
+                println!("\t{} ({})", server.name, server.host);
+            }
+            println!("");
+        }
+        
         std::process::exit(0);
     }
 
