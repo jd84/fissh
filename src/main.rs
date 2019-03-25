@@ -14,7 +14,7 @@ use server::{ServerManager, Server, CredentialManager, Account, Auth, Manager};
 
 fn main() {
     let matches = App::new("fissh")
-        .version("1.0")
+        .version("0.0.0")
         .author("Jan D. <jan@stdpixel.com>")
         .about("fissh is a ssh wrapper and connection manager.")
         .arg(Arg::with_name("config")
@@ -32,7 +32,7 @@ fn main() {
         )
         .get_matches();
 
-    let config_file = matches.value_of("config").unwrap_or("config.yml");
+    let config_file = matches.value_of("config").unwrap_or("~/.ssh/fissh.yml");
     let config = YamlLoader::load_from_str(&config_to_string(config_file)).unwrap();
 
     let mut server_manager = ServerManager::default();
