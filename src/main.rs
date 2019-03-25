@@ -15,7 +15,7 @@ use server::{ServerManager, Server, CredentialManager, Account, Auth, Manager};
 fn main() {
     let matches = App::new("fissh")
         .version("0.0.0")
-        .author("Jan D. <jan@stdpixel.com>")
+        .author("Jan D. <jd84@protonmail.com>")
         .about("fissh is a ssh wrapper and connection manager.")
         .arg(Arg::with_name("config")
             .short("c")
