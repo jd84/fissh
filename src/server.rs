@@ -32,22 +32,6 @@ pub struct CredentialManager {
     accounts: Vec<Account>,
 }
 
-pub struct ServerIter<'a> {
-    data: std::slice::Iter<'a, Server>,
-    curr: usize,
-}
-
-impl<'a> Iterator for ServerIter<'a> {
-    type Item = &'a Server;
-    fn next(&mut self) -> Option<&'a Server> {
-        while let Some(server) = self.data.next() {
-            self.curr += 1;
-            return Some(server);
-        }
-        None   
-    }
-} 
-
 impl Account {
     pub fn new(name: &str) -> Self {
         Self {
@@ -94,19 +78,16 @@ impl ServerManager {
         panic!("No server found with name `{}`", name);
     }
 
-    pub fn iter(&self, group: &str) -> ServerIter {
-        ServerIter {
-            data: self.servers.get(group).unwrap().iter(),
-            curr: 0,
-        }
-    }
-
     pub fn groups(&self) -> Vec<&str> {
         let mut groups = Vec::with_capacity(self.servers.len());
         for (group, _) in self.servers.iter() {
             groups.push(group.as_str());
         }
         groups
+    }
+
+    pub fn get_servers(&self, group: &str) -> &Vec<Server> {
+        self.servers.get(group).unwrap()
     }
 }
 
@@ -159,18 +140,6 @@ mod test {
 
         assert_eq!(s_manager.find("test").name, "test");
         assert_eq!(s_manager.groups(), vec!["default"]);
-    }
-
-    #[test]
-    fn server_manager_check_iter() {
-        let mut s_manager = ServerManager::default();
-        let s = Server::with("test", "test.localhost.local", 22, vec![String::from("root")], "default");
-        s_manager.add(s);
-        
-
-        for server in s_manager.iter("default") {
-            assert_eq!(server.name, "test");
-        }
     }
 
     #[test]

@@ -7,7 +7,7 @@ mod command;
 use clap::{Arg, App};
 use std::env;
 
-use server::{ServerManager, Server, CredentialManager, Account};
+use server::{Server, Account};
 
 fn main() {
     let matches = App::new("fissh")
@@ -23,7 +23,7 @@ fn main() {
             .short("l")
             .help("List all configured hosts")
         )
-        .arg(Arg::with_name("HOST")
+        .arg(Arg::with_name("HOST_OR_GROUP")
             .help("The host used for the next connection")
             .index(1)
             .required_unless_one(&["list", "Version"])
@@ -37,37 +37,44 @@ fn main() {
     let config = config::Config::from_file(config_file);
 
     if matches.is_present("list") {
-        for group in config.server_manager().groups().iter() {
-            println!("{}\n", group);
-            let mut loops = 0;
-            for server in config.server_manager().iter(group) {
-                loops += 1;
-                if loops % 4 == 0 {
-                    println!("\t{} ({})", server.name, server.host);
-                } else {
-                    print!("\t{} ({})", server.name, server.host);
+        match matches.value_of("HOST_OR_GROUP") {
+            Some(group) => print_servers(group, config.server_manager().get_servers(group)),
+            None => {
+                for group in config.server_manager().groups() {
+                    print_servers(group, config.server_manager().get_servers(group));
                 }
             }
-            println!("");
-            println!("");
         }
-        
         std::process::exit(0);
     }
 
-    if let Some(host) = matches.value_of("HOST") {
-        connect(config.server_manager(), config.credential_manager(), host);
+    if let Some(host) = matches.value_of("HOST_OR_GROUP") {
+        let server = config.server_manager().find(host);
+        let account = config.credential_manager().find(&server.users[0]);
+        connect(server, account);
     }
     
     println!("Thanks for using fissh!");
 }
 
-fn connect(servers: &ServerManager, accounts: &CredentialManager, name: &str) {
-    let server: &Server = servers.find(name);
-    let account: &Account = accounts.find(&server.users[0]);
-
+fn connect(server: &Server, account: &Account) {
     println!("Start SSH for {} as {}", server.host, account.name);
     
     let mut ssh = command::Ssh::with(server, account);
     ssh.run();
+}
+
+fn print_servers(group: &str, servers: &Vec<Server>) {
+    println!("{}\n", group);
+
+    let mut i = 0;
+    for server in servers {
+        i += 1;
+        if i % 4 == 0 {
+            println!("\t{0: <10} {1: <25}", server.name, server.host);
+        } else {
+            print!("\t{0: <10} {1: <25}", server.name, server.host);
+        }
+    }
+    println!("\n");
 }
