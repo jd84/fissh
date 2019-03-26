@@ -8,8 +8,9 @@ use clap::{Arg, App};
 use std::env;
 
 use server::{Server, Account};
+use config::ConfigError;
 
-fn main() {
+fn main() -> Result<(), ConfigError> {
     let matches = App::new("fissh")
         .version("0.0.0")
         .author("Jan D. <jd84@protonmail.com>")
@@ -34,7 +35,7 @@ fn main() {
     default_file.push("/.ssh/fissh.yml");
 
     let config_file = matches.value_of("config").unwrap_or(default_file.to_str().unwrap());
-    let config = config::Config::from_file(config_file);
+    let config = config::Config::from_file(config_file)?;
 
     if matches.is_present("list") {
         match matches.value_of("HOST_OR_GROUP") {
@@ -55,6 +56,7 @@ fn main() {
     }
     
     println!("Thanks for using fissh!");
+    Ok(())
 }
 
 fn connect(server: &Server, account: &Account) {
