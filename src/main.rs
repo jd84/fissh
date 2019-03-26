@@ -63,7 +63,7 @@ fn main() {
 }
 
 fn connect(servers: &ServerManager, accounts: &CredentialManager, name: &str) {
-    let server: &Server = servers.find(String::from(name));
+    let server: &Server = servers.find(name);
     let account: &Account = accounts.find(&server.users[0]);
 
     println!("Start SSH for {} as {}", server.host, account.name);

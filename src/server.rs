@@ -49,29 +49,29 @@ impl<'a> Iterator for ServerIter<'a> {
 } 
 
 impl Account {
-    pub fn new(name: String) -> Self {
+    pub fn new(name: &str) -> Self {
         Self {
-            name,
+            name: String::from(name),
             auth: Auth::Password,
         }
     }
 
-    pub fn with_key(name: String, key: String) -> Self {
+    pub fn with_key(name: &str, key: String) -> Self {
         Self {
-            name,
+            name: String::from(name),
             auth: Auth::PublicKey(key),
         }
     }
 }
 
 impl Server {
-    pub fn with(name: String, host: String, port: u32, users: Vec<String>, group: String) -> Self {
+    pub fn with(name: &str, host: &str, port: u32, users: Vec<String>, group: &str) -> Self {
         Self {
-            name,
-            host,
+            name: name.to_owned(),
+            host: host.to_owned(),
             port,
             users,
-            group,
+            group: group.to_owned(),
         }
     }
 }
@@ -85,7 +85,7 @@ impl Default for ServerManager {
 }
 
 impl ServerManager {
-    pub fn find(&self, name: String) -> &Server {
+    pub fn find(&self, name: &str) -> &Server {
         for (_, servers) in self.servers.iter() {
             if let Some(idx) = servers.iter().position(|r| r.name == name) {
                 return servers.get(idx).unwrap();
@@ -101,10 +101,10 @@ impl ServerManager {
         }
     }
 
-    pub fn groups(&self) -> Vec<String> {
+    pub fn groups(&self) -> Vec<&str> {
         let mut groups = Vec::with_capacity(self.servers.len());
         for (group, _) in self.servers.iter() {
-            groups.push(group.clone());
+            groups.push(group.as_str());
         }
         groups
     }
@@ -144,5 +144,41 @@ impl CredentialManager {
             return self.accounts.get(idx).unwrap();
         }
         panic!("No account found for user `{}`", name);
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn server_manager_integrity_check() {
+        let mut s_manager = ServerManager::default();
+        let s = Server::with("test", "test.localhost.local", 22, vec![String::from("root")], "default");
+        s_manager.add(s);
+
+        assert_eq!(s_manager.find("test").name, "test");
+        assert_eq!(s_manager.groups(), vec!["default"]);
+    }
+
+    #[test]
+    fn server_manager_check_iter() {
+        let mut s_manager = ServerManager::default();
+        let s = Server::with("test", "test.localhost.local", 22, vec![String::from("root")], "default");
+        s_manager.add(s);
+        
+
+        for server in s_manager.iter("default") {
+            assert_eq!(server.name, "test");
+        }
+    }
+
+    #[test]
+    fn credential_manager_check() {
+        let mut c_manager = CredentialManager::default();
+        let account = Account::new("root");
+        c_manager.add(account);
+
+        assert_eq!(c_manager.find("root").name, "root");
     }
 }

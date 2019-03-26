@@ -48,7 +48,7 @@ impl Config {
 
     fn parse_credentials(&mut self, accounts: &Vec<Yaml>) {
         for a in accounts {
-            let user = a["User"].as_str().unwrap().to_owned();
+            let user = a["User"].as_str().unwrap();
 
             if let Some(file) = a["IdentityFile"].as_str() {
                 self.credentials.add(Account::with_key(user, file.to_owned()));
@@ -66,11 +66,11 @@ impl Config {
                 .collect();
 
             let server = Server::with(
-                s["Name"].as_str().unwrap().to_owned(), 
-                s["HostName"].as_str().unwrap().to_owned(),
+                s["Name"].as_str().unwrap(), 
+                s["HostName"].as_str().unwrap(),
                 s["Port"].as_i64().unwrap() as u32,
                 users,
-                String::from(group),
+                group,
             );
             self.servers.add(server);
         }
