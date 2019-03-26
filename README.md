@@ -1,5 +1,7 @@
 # fissh
 
+[![Build Status](https://www.travis-ci.org/jd84/fissh.svg?branch=master)](https://www.travis-ci.org/jd84/fissh)
+
 `fissh` is a SSH wrapper to manage and group server connections aligned with credentials.
 
 > For security reason `fissh` doesn't store any passwords.
