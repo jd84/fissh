@@ -1,80 +1,47 @@
-# Based on the "trust" template v0.1.2
-# https://github.com/japaric/trust/tree/v0.1.2
-
 dist: trusty
 language: rust
 services: docker
 sudo: required
-
-# TODO Rust builds on stable by default, this can be
-# overridden on a case by case basis down below.
-
 env:
   global:
-    # TODO Update this to match the name of your project.
-    - CRATE_NAME=fissh
-
+  - CRATE_NAME=fissh
+  - secure: N0UJZPI9/lZTDf7k6Z/TN/zfO5Uzt4x/s6XAHH9VMXXJq0Nhjv8p8u0no56v+zo6W7wZFZ3tGi06CJdNkcdXiW2AvAQvFbPF/ffE958BFTK/O/3PI3If/yOgWg5rDm3ah+ZTMJlFUt+GCNpqjNfaux9+m9loWXJ6NxHgJvfbN20yh6tDF5cN8COqyT9VlKmBoJnluKJmEbUXzsDiGP+IRJlWQsGM3O3nYuXZ/uJk6ZiARFIk2BR1QNOYp0HhfwjRlAfYsNlbTms74JlT1kAA9BhqNX0zBiHJQTA+q+1npZcCdxEbZ9L/zZPjoqMR892UluutMv1kig2Rxu/eWjvbcHgITXo/3AqcNnJnAs5drynVMmscHiY2plY6s+B8HKTTfHou7BcT/ZnFGOhyEde37RVdgU6OhAM/oiN5E2gzA9ic6XdU0sFYAcYflSTh5aw8rl1iNHe9NMoWuVvUkMuMdPexbsOJMsr+pgVcU7HicpOJpYutR+faMNn3CPFUyM/nfOEfP/ENAR1UrHBTb2GSniQd40qovcm4E5D4pbJinZdIIWaNQ3zok00om1FuJAPVe8WAXeZzSM+pJv7bJD35CnK4n8sWC6LNK/1tMk0fPWJCVoq9UC6FOrUv8E9e+zs0rS806jkPdJW2TYKYW7WLTP3WeJK59Wf4OAJeOvYujw4=
+  - secure: TxPPOSZjyE/G1NpESum6c/oRpT3bh4hllcGNnVwi+X24FYRSmjNIcJg+wsZ1LxQgkRYCwRedu6oA6t3jnvCuj3wvhdOdiBX6S8JkuKHBi+i+H90sDnmkQLTXpmFPZLw11ykIieuNVMtCGl5j/Nb5dP8f/60fz3dC3FiXP0MBpBDg+CM34TIJtDI9R3hsbwNX5JpCoKDy8CYs+PlfNEmhUVrLQCiAwGnmOIvXu32MYZZwMyuIPKUtzpAg2aHxfrA2VkLGwAlV8tq3qfzjMgEd0/BDh1zmP2hJ45HGgZuAxV8534HoLhUEaGFSVuzeONXZNTVUHNMQkMu7tYFpDo8GGVYmSYP1XDs7pf6kfvCiDTjhO2FXm5N+FH86mAjs0dXwsSyJVvJpU1CnrxgN7IBqvpvIo4F49k+FCK+tBZjDiy0Pu+uI8r0/TfZWY0zhmuqKHgbaYL0+e7BTB2MDA2sWonza4STehWjs6RNsuGVrOnJ4xwlIyRyuwBt8fD6W5+FrE15TQ+vGwxg5Of6KyL00Y2fSPceWtLdUHopfD5anhnVvsmHMtHXggSInCPDIihVfElMLLrqzV2YoeFq8MmI1pTJMpBnkOEfh0yu7NWiMV0wh2VouCsSw1MyeFGSRGfdkjm6OqPfJSbUnoY4nFSlgibMuLGGzpd7D/XkeMsuENtg=
 matrix:
-  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
   include:
-    # Linux
-    - env: TARGET=x86_64-unknown-linux-gnu
-    - env: TARGET=x86_64-unknown-linux-musl
-
-    # OSX
-    - env: TARGET=x86_64-apple-darwin
-      os: osx
-
-    # Windows
-    - env: TARGET=x86_64-pc-windows-gnu
-
+  - env: TARGET=x86_64-unknown-linux-gnu
+  - env: TARGET=x86_64-unknown-linux-musl
+  - env: TARGET=x86_64-apple-darwin
+    os: osx
+  - env: TARGET=x86_64-pc-windows-gnu
 before_install:
-  - set -e
-  - rustup self update
-
+- set -e
+- rustup self update
 install:
-  - sh ci/install.sh
-  - source ~/.cargo/env || true
-
+- sh ci/install.sh
+- source ~/.cargo/env || true
 script:
-  - bash ci/script.sh
-
+- bash ci/script.sh
 after_script: set +e
-
 before_deploy:
-  - sh ci/before_deploy.sh
-
+- sh ci/before_deploy.sh
 deploy:
-  # TODO update `api_key.secure`
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
-  # - Paste the output down here
   api_key:
-    secure: o0zErIZleOrzWDwY7et5YuxbgHyE76iqlKJvb237y228ldSJASKeU17Q0XPwxNxL2z9ES3++lA24KQn8GWuie4CUmcbftCU91tvaUzuh/PULELQ7n0F+54D+60APBnK+PUexnzj/R4LHPW+RzZ5F3q9Uo97oKakqBO3UdFKgwsDxIdYua1odLk+BPiErqsj2N3V2keV4LNkqGB33tgrmcZO4HC/oG5n37eghZEWzh5hA7DBwMN+XDJcCed2QOcBpd4edwUNwJzSVGQSUbTLbS0s6v+sE6V6vfQ2+bVIFWjExl618BgscMMWbJNiyBfAKIjxwsjxu5bdG6InQXKiOo9eB2DWkFUO3xqpI9g70hLBsjELTRJqF3oCFNVdW6Cnx/e3FRPJtACVADjI0cNAdF2bvaZSHX8mcSM2oLoPlscFPc835muepgnzI2ecfvBgtUqZcSFfUy0nJj5+uCDdo5NwDqjBBEJnqfSvODWXBngEuIq1MKqKFmnQQ+492vc+ybn5WX9Npl90EC8M/P/96K4ReSNAZfjXcsRFBkSoz9qL3N8JoCWMv0XZUy7rEyHNJixjuX6BWuH9ETzZhr/0zLYZhiMeItm6v2ZY3HQkJQLsDM7ppsNMpbFeltOJQ+Hm03GnHrUnkjxZ68833H6TGgcDanssCQTiFFB3UDDiv60o=
+    secure: oqKl4ClbapkZKQBiFXbwbxet0wF260Bpz6vJJfI9ge3BDw5PSgcKtDrwB9aeOZiPiJJZqCcTuw1ENYVpVyEHlSVYIkaMOEI5Bc3jt/JNuaS0pPQ5Odkv6kMNpUwEr41j7lKr3Gy3kRbqxbnIQbLfQB2akGAuR/6GGZ/rclyKg0BsgoCrUe9W6o6nO3EH/xZiVFgksDYgHagYd1Puq2uPEVU2THKRRRbBuxp0CWsKvykq8wANZrInsXMOr8bjsLR+zHMrv1lWbA+ZMYYgqSggSlTCys8RtdU3KCJDqSYvnOHuWoRj6bKPhuI6y9fcYebhv1sgw+STKn7WpYKVsfaiUTisfhgiAnoRuShmtCukFtgTy2AAnreJh8ylLQitmm66myq+z4wvediP5gOCK6uXfpUSdjSyZPU1GhTDglGz5wPdhdcFDmuAsgMpQHQsqeifClABnfHOo3f7uac+bgNCTdqT850gCf2Gz9SXkqfam0YZe/VzFJVAa2OomsCzx0ZyVCbE613KXfuetgNOBvFk71roOI0UwVq6QS6FhVflLwrjnW4Sm/gJJK3e0GbQ3dclR8A3RltPN7xKnn++7uTgpP+LASbUALVAafwXM/9y5wyfNISHf+AGs/cSE2ygleH1v5o67wytNDbyObeOvmajzRVG+/7UtNNNLWff/d4De5w=
   file_glob: true
-  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
+  file: "$CRATE_NAME-$TRAVIS_TAG-$TARGET.*"
   on:
-    # TODO Here you can pick which targets will generate binary releases
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
-    condition: $TRAVIS_RUST_VERSION = stable
+    condition: "$TRAVIS_RUST_VERSION = stable"
     tags: true
   provider: releases
   skip_cleanup: true
-
 cache: cargo
 before_cache:
-  # Travis can't cache files that are not readable by "others"
-  - chmod -R a+r $HOME/.cargo
-
+- chmod -R a+r $HOME/.cargo
 branches:
   only:
-    # release tags
-    - /^v\d+\.\d+\.\d+.*$/
-    - master
-
+  - "/^v\\d+\\.\\d+\\.\\d+.*$/"
+  - master
 notifications:
   email:
     on_success: never
