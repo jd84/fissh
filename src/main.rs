@@ -5,6 +5,7 @@ mod config;
 mod command;
 
 use clap::{Arg, App};
+use std::env;
 
 use server::{ServerManager, Server, CredentialManager, Account};
 
@@ -25,18 +26,29 @@ fn main() {
         .arg(Arg::with_name("HOST")
             .help("The host used for the next connection")
             .index(1)
+            .required_unless_one(&["list", "Version"])
         )
         .get_matches();
 
-    let config_file = matches.value_of("config").unwrap_or("~/.ssh/fissh.yml");
+    let mut default_file = env::var_os("HOME").unwrap();
+    default_file.push("/.ssh/fissh.yml");
+
+    let config_file = matches.value_of("config").unwrap_or(default_file.to_str().unwrap());
     let config = config::Config::from_file(config_file);
 
     if matches.is_present("list") {
         for group in config.server_manager().groups().iter() {
             println!("{}\n", group);
+            let mut loops = 0;
             for server in config.server_manager().iter(group) {
-                println!("\t{} ({})", server.name, server.host);
+                loops += 1;
+                if loops % 4 == 0 {
+                    println!("\t{} ({})", server.name, server.host);
+                } else {
+                    print!("\t{} ({})", server.name, server.host);
+                }
             }
+            println!("");
             println!("");
         }
         

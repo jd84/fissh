@@ -42,7 +42,7 @@ impl Config {
 
     fn parse_group(&mut self, groups: &Vec<Yaml>) {
         for group in groups {
-            self.parse_hosts(group.as_str().unwrap(), group["hosts"].as_vec().unwrap());
+            self.parse_hosts(group["Name"].as_str().unwrap(), group["Hosts"].as_vec().unwrap());
         }
     }
 
