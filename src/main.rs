@@ -17,7 +17,7 @@ fn main() -> Result<(), ConfigError> {
         .about("fissh is a ssh wrapper and connection manager.")
         .arg(Arg::with_name("config")
             .short("c")
-            .help("The configuration file for fissh")
+            .help("The configuration file for fissh. Default is `~/.ssh/fissh.yml`")
             .takes_value(true)
         )
         .arg(Arg::with_name("list")
