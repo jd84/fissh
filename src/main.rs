@@ -24,10 +24,19 @@ fn main() -> Result<(), ConfigError> {
             .short("l")
             .help("List all configured hosts")
         )
+        .arg(Arg::with_name("transfer")
+            .short("t")
+            .help("Transfer a file from or to a server")
+            .requires("TO_OR_FROM")
+        )
         .arg(Arg::with_name("HOST_OR_GROUP")
             .help("The host used for the next connection")
             .index(1)
             .required_unless_one(&["list", "Version"])
+        )
+        .arg(Arg::with_name("TO_OR_FROM")
+            .help("The source or destination for scp")
+            .index(2)
         )
         .get_matches();
 
@@ -36,6 +45,32 @@ fn main() -> Result<(), ConfigError> {
 
     let config_file = matches.value_of("config").unwrap_or(default_file.to_str().unwrap());
     let config = config::Config::from_file(config_file)?;
+
+    if matches.is_present("transfer") {
+        let src = matches.value_of("HOST_OR_GROUP").unwrap();
+        let dest = matches.value_of("TO_OR_FROM").unwrap();
+
+        // transfer from server 
+        if src.contains(":") {
+            let src_parts: Vec<&str> = src.split(":").collect();
+            let server = config.server_manager().find(&src_parts[0]);
+            let account = config.credential_manager().find(&server.users[0]);
+            
+            let file_src = format!("{}:{}", server.host, &src_parts[1]);
+            transfer(server, account, &file_src, dest);
+
+        // transfer to server
+        } else {
+            let dest_parts: Vec<&str> = dest.split(":").collect();
+            let server = config.server_manager().find(&dest_parts[0]);
+            let account = config.credential_manager().find(&server.users[0]);
+
+            let file_dest = format!("{}:{}", server.host, &dest_parts[1]);
+            transfer(server, account, src, &file_dest);
+        }
+
+        return Ok(());
+    }
 
     if matches.is_present("list") {
         match matches.value_of("HOST_OR_GROUP") {
@@ -64,6 +99,13 @@ fn connect(server: &Server, account: &Account) {
     
     let mut ssh = command::Ssh::with(server, account);
     ssh.run();
+}
+
+fn transfer(server: &Server, account: &Account, from: &str, to: &str) {
+    println!("Start SCP for {} as {}", server.host, account.name);
+
+    let mut scp = command::Scp::with(server, account, from, to);
+    scp.run();
 }
 
 fn print_servers(group: &str, servers: &Vec<Server>) {
