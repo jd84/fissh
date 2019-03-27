@@ -116,10 +116,11 @@ fn print_servers(group: &str, servers: &Vec<Server>) {
     let mut i = 0;
     for server in servers {
         i += 1;
+        let server_name = format!("{} ({})", server.name, server.host);
         if i % 4 == 0 {
-            println!("\t{0: <10} {1: <25}", server.name, server.host);
+            println!("\t{0: <40}", server_name);
         } else {
-            print!("\t{0: <10} {1: <25}", server.name, server.host);
+            print!("\t{0: <40}", server_name);
         }
     }
     println!("\n");
