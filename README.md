@@ -67,3 +67,10 @@ work-network
 ```
 
 To open a ssh connection to you server run `fissh vm-01`.
+
+To transfer files from or to a server `fissh` supports scp.
+
+Transfer a file to a server run `fissh -t /path/to/file.txt vm-01:/path/to/dest.txt` 
+Or download a file from a server `fissh -t vm-01:/path/to/file.txt .`
+
+The Parameter `-t` tells `fissh` that you would transfer a file. In the feature maybe this parameter will be removed, so `fissh` can auto detect between ssh and scp connections, but for now the `-t` is required.

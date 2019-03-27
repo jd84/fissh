@@ -22,10 +22,12 @@ fn main() -> Result<(), ConfigError> {
         )
         .arg(Arg::with_name("list")
             .short("l")
+            .long("list")
             .help("List all configured hosts")
         )
         .arg(Arg::with_name("transfer")
             .short("t")
+            .long("transfer")
             .help("Transfer a file from or to a server")
             .requires("TO_OR_FROM")
         )
@@ -68,7 +70,7 @@ fn main() -> Result<(), ConfigError> {
             let file_dest = format!("{}:{}", server.host, &dest_parts[1]);
             transfer(server, account, src, &file_dest);
         }
-
+        println!("Thanks for using fissh!");
         return Ok(());
     }
 
