@@ -21,6 +21,8 @@ Example **config.yml**
 ```yaml
 version: 1
 
+editor: nano
+
 credentials:
     -   
         User: admin_user
@@ -74,3 +76,5 @@ Transfer a file to a server run `fissh -t /path/to/file.txt vm-01:/path/to/dest.
 Or download a file from a server `fissh -t vm-01:/path/to/file.txt .`
 
 The Parameter `-t` tells `fissh` that you would transfer a file. In the feature maybe this parameter will be removed, so `fissh` can auto detect between ssh and scp connections, but for now the `-t` is required.
+
+To edit you config you can call `fissh -e` and your favorite editor will start. The parameter `-e` consumes the value configured under `editor`.

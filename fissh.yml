@@ -1,5 +1,7 @@
 version: 1
 
+editor: nano
+
 credentials:
     -   
         User: admin_user

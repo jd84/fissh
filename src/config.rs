@@ -41,6 +41,7 @@ impl From<std::io::Error> for ConfigError {
 pub struct Config {
     servers: ServerManager,
     credentials: CredentialManager,
+    pub editor: Option<String>,
 }
 
 impl Config {
@@ -52,6 +53,7 @@ impl Config {
         let mut c = Self {
             servers: ServerManager::default(),
             credentials: CredentialManager::default(),
+            editor: None,
         };
 
         c.parse(YamlLoader::load_from_str(&content).unwrap())?;
@@ -67,6 +69,10 @@ impl Config {
     }
 
     fn parse(&mut self, data: Vec<Yaml>) -> Result<(), ConfigError> {
+        if !data[0]["editor"].is_badvalue() {
+            self.editor = Some(data[0]["editor"].as_str().unwrap().to_owned());
+        }
+
         if data[0]["groups"].is_badvalue() {
             return Err(ConfigError::ParseError("The `groups` section does not exists.".to_owned()));
         }

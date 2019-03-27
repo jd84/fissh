@@ -34,11 +34,16 @@ fn main() -> Result<(), ConfigError> {
         .arg(Arg::with_name("HOST_OR_GROUP")
             .help("The host used for the next connection")
             .index(1)
-            .required_unless_one(&["list", "Version"])
+            .required_unless_one(&["list", "Version", "edit"])
         )
         .arg(Arg::with_name("TO_OR_FROM")
             .help("The source or destination for scp")
             .index(2)
+        )
+        .arg(Arg::with_name("edit")
+            .help("Open fissh.yml in your favorite editor.")
+            .short("e")
+            .long("edit")
         )
         .get_matches();
 
@@ -69,6 +74,21 @@ fn main() -> Result<(), ConfigError> {
 
             let file_dest = format!("{}:{}", server.host, &dest_parts[1]);
             transfer(server, account, src, &file_dest);
+        }
+        println!("Thanks for using fissh!");
+        return Ok(());
+    }
+
+    if matches.is_present("edit") {
+        match config.editor {
+            Some(ref prog) => {
+                println!("Start {} to edit fissh.yml", prog);
+                let mut editor = command::Editor::new(prog, config_file);
+                editor.run();
+            }
+            _ => {
+                println!("Specify an editor to use this feature!");
+            }
         }
         println!("Thanks for using fissh!");
         return Ok(());

@@ -10,6 +10,10 @@ pub struct Scp {
     command: Command,
 }
 
+pub struct Editor {
+    command: Command,
+}
+
 impl Ssh {
     pub fn with(server: &Server, account: &Account) -> Self {
         let mut args: Vec<&str> = Vec::new();
@@ -67,5 +71,21 @@ impl Scp {
     pub fn run(&mut self) {
         let mut scp = self.command.spawn().expect("scp failed");
         scp.wait().unwrap();
+    }
+}
+
+impl Editor {
+    pub fn new(prog: &str, path: &str) -> Self {
+        let mut editor = Self {
+            command: Command::new(prog),
+        };
+
+        editor.command.arg(path);
+        editor
+    }
+
+    pub fn run(&mut self) {
+        let mut editor = self.command.spawn().expect("failed to spawn editor");
+        editor.wait().unwrap();
     }
 }
