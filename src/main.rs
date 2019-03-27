@@ -12,7 +12,7 @@ use config::ConfigError;
 
 fn main() -> Result<(), ConfigError> {
     let matches = App::new("fissh")
-        .version("0.0.0")
+        .version("0.0.2")
         .author("Jan D. <jd84@protonmail.com>")
         .about("fissh is a ssh wrapper and connection manager.")
         .arg(Arg::with_name("config")

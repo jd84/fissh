@@ -55,7 +55,7 @@ impl Scp {
             _conn = format!("{}@{}", account.name, dest);
             args.push(&_conn);
         }
-        println!("{:?}", args);
+        
         let mut scp = Self {
             command: Command::new("scp"),
         };
