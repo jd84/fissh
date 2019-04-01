@@ -1,10 +1,10 @@
-# fissh
+# russh
 
-[![Build Status](https://www.travis-ci.org/jd84/fissh.svg?branch=master)](https://www.travis-ci.org/jd84/fissh)
+[![Build Status](https://www.travis-ci.org/jd84/russh.svg?branch=master)](https://www.travis-ci.org/jd84/russh)
 
-`fissh` is a SSH wrapper to manage and group server connections aligned with credentials.
+`russh` is a SSH wrapper to manage and group server connections aligned with credentials.
 
-> For security reason `fissh` doesn't store any passwords.
+> For security reason `russh` doesn't store any passwords.
 
 ## Installation
 
@@ -14,7 +14,7 @@ Pre-build binaries for Linux, Windows and MacOS can be found on the release page
 
 ## Quick Start
 
-Once `fissh` is installed on your computer. Try running `fissh --version` to make sure that is installed correctly, create a file named `fissh.yml` in `~/.ssh/`.
+Once `russh` is installed on your computer. Try running `russh --version` to make sure that is installed correctly, create a file named `russh.yml` in `~/.ssh/`.
 
 Example **config.yml**
 
@@ -54,10 +54,10 @@ groups:
                 Users: [admin_user]
 ```
 
-To list and show your configured servers, just run `fissh -l`
+To list and show your configured servers, just run `russh -l`
 
 ```bash
-$ fissh -l
+$ russh -l
 home-network
 
 	pollux (pollux.home-network.local)
@@ -68,13 +68,17 @@ work-network
 	vm-01 (vm-01.srv.work-network.com)
 ```
 
-To open a ssh connection to you server run `fissh vm-01`.
+To open a ssh connection to you server run `russh vm-01`.
 
-To transfer files from or to a server `fissh` supports scp.
+To transfer files from or to a server `russh` supports scp.
 
-Transfer a file to a server run `fissh -t /path/to/file.txt vm-01:/path/to/dest.txt` 
-Or download a file from a server `fissh -t vm-01:/path/to/file.txt .`
+Transfer a file to a server run `russh -t /path/to/file.txt vm-01:/path/to/dest.txt` 
+Or download a file from a server `russh -t vm-01:/path/to/file.txt .`
 
-The Parameter `-t` tells `fissh` that you would transfer a file. In the feature maybe this parameter will be removed, so `fissh` can auto detect between ssh and scp connections, but for now the `-t` is required.
+The Parameter `-t` tells `russh` that you would transfer a file. In the feature maybe this parameter will be removed, so `russh` can auto detect between ssh and scp connections, but for now the `-t` is required.
 
-To edit you config you can call `fissh -e` and your favorite editor will start. The parameter `-e` consumes the value configured under `editor`.
+To edit you config you can call `russh -e` and your favorite editor will start. The parameter `-e` consumes the value configured under `editor`.
+
+## Thanks
+
+Thanks to https://github.com/japaric/trust for CI templates!

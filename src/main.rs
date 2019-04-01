@@ -11,13 +11,13 @@ use server::{Server, Account};
 use config::ConfigError;
 
 fn main() -> Result<(), ConfigError> {
-    let matches = App::new("fissh")
-        .version("0.0.2")
+    let matches = App::new("russh")
+        .version("0.0.3")
         .author("Jan D. <jd84@protonmail.com>")
-        .about("fissh is a ssh wrapper and connection manager.")
+        .about("russh is a ssh wrapper and connection manager.")
         .arg(Arg::with_name("config")
             .short("c")
-            .help("The configuration file for fissh. Default is `~/.ssh/fissh.yml`")
+            .help("The configuration file for russh. Default is `~/.ssh/russh.yml`")
             .takes_value(true)
         )
         .arg(Arg::with_name("list")
@@ -41,14 +41,14 @@ fn main() -> Result<(), ConfigError> {
             .index(2)
         )
         .arg(Arg::with_name("edit")
-            .help("Open fissh.yml in your favorite editor.")
+            .help("Open russh.yml in your favorite editor.")
             .short("e")
             .long("edit")
         )
         .get_matches();
 
     let mut default_file = env::var_os("HOME").unwrap();
-    default_file.push("/.ssh/fissh.yml");
+    default_file.push("/.ssh/russh.yml");
 
     let config_file = matches.value_of("config").unwrap_or(default_file.to_str().unwrap());
     let config = config::Config::from_file(config_file)?;
@@ -75,14 +75,14 @@ fn main() -> Result<(), ConfigError> {
             let file_dest = format!("{}:{}", server.host, &dest_parts[1]);
             transfer(server, account, src, &file_dest);
         }
-        println!("Thanks for using fissh!");
+        println!("Thanks for using russh!");
         return Ok(());
     }
 
     if matches.is_present("edit") {
         match config.editor {
             Some(ref prog) => {
-                println!("Start {} to edit fissh.yml", prog);
+                println!("Start {} to edit russh.yml", prog);
                 let mut editor = command::Editor::new(prog, config_file);
                 editor.run();
             }
@@ -90,7 +90,7 @@ fn main() -> Result<(), ConfigError> {
                 println!("Specify an editor to use this feature!");
             }
         }
-        println!("Thanks for using fissh!");
+        println!("Thanks for using russh!");
         return Ok(());
     }
 
@@ -112,7 +112,7 @@ fn main() -> Result<(), ConfigError> {
         connect(server, account);
     }
     
-    println!("Thanks for using fissh!");
+    println!("Thanks for using russh!");
     Ok(())
 }
 
