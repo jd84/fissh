@@ -1,9 +1,9 @@
-use super::server::{Server, Account, Auth};
+use super::server::{Account, Auth, Server};
 
 use std::process::Command;
 
 pub struct Ssh {
-    command: Command,    
+    command: Command,
 }
 
 pub struct Scp {
@@ -42,7 +42,7 @@ impl Ssh {
 impl Scp {
     pub fn with(_server: &Server, account: &Account, src: &str, dest: &str) -> Self {
         let mut args: Vec<&str> = Vec::new();
-        
+
         if let Auth::PublicKey(ref file) = account.auth {
             args.push("-i");
             args.push(file);
@@ -59,7 +59,7 @@ impl Scp {
             _conn = format!("{}@{}", account.name, dest);
             args.push(&_conn);
         }
-        
+
         let mut scp = Self {
             command: Command::new("scp"),
         };

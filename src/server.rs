@@ -12,7 +12,7 @@ pub struct Server {
     pub port: u32,
     pub users: Vec<String>,
     pub group: String,
-} 
+}
 
 pub enum Auth {
     PublicKey(String),
@@ -89,6 +89,10 @@ impl ServerManager {
     pub fn get_servers(&self, group: &str) -> &Vec<Server> {
         self.servers.get(group).unwrap()
     }
+
+    pub fn all(&self) -> &HashMap<String, Vec<Server>> {
+        &self.servers
+    }
 }
 
 impl Manager for ServerManager {
@@ -106,7 +110,7 @@ impl Manager for ServerManager {
 impl Default for CredentialManager {
     fn default() -> Self {
         Self {
-            accounts: Vec::new()
+            accounts: Vec::new(),
         }
     }
 }
@@ -135,7 +139,13 @@ mod test {
     #[test]
     fn server_manager_integrity_check() {
         let mut s_manager = ServerManager::default();
-        let s = Server::with("test", "test.localhost.local", 22, vec![String::from("root")], "default");
+        let s = Server::with(
+            "test",
+            "test.localhost.local",
+            22,
+            vec![String::from("root")],
+            "default",
+        );
         s_manager.add(s);
 
         assert_eq!(s_manager.find("test").name, "test");
