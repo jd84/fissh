@@ -15,7 +15,7 @@ use server::{Account, Server, ServerManager};
 
 fn main() -> Result<(), ConfigError> {
     let matches = App::new("russh")
-        .version("0.0.3")
+        .version("0.0.4")
         .author("Jan D. <jd84@protonmail.com>")
         .about("russh is a ssh wrapper and connection manager.")
         .arg(
@@ -180,7 +180,7 @@ fn print_servers(group: &str, servers: &Vec<Server>) {
 }
 
 fn write_autocomplete(servers: &ServerManager) {
-    let func_raw = r#"#compdef fissh
+    let func_raw = r#"#compdef russh
 _arguments "1: :(%__SERVERS__%)"
 "#;
 
