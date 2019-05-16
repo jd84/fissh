@@ -3,7 +3,11 @@ use std::collections::HashMap;
 pub trait Manager {
     type Item;
 
+    /// Add new item
     fn add(&mut self, item: Self::Item);
+
+    /// Find an item
+    fn find(&self, name: &str) -> Option<&Self::Item>;
 }
 
 pub struct Server {
@@ -69,15 +73,6 @@ impl Default for ServerManager {
 }
 
 impl ServerManager {
-    pub fn find(&self, name: &str) -> &Server {
-        for (_, servers) in self.servers.iter() {
-            if let Some(idx) = servers.iter().position(|r| r.name == name) {
-                return servers.get(idx).unwrap();
-            }
-        }
-        panic!("No server found with name `{}`", name);
-    }
-
     pub fn groups(&self) -> Vec<&str> {
         let mut groups = Vec::with_capacity(self.servers.len());
         for (group, _) in self.servers.iter() {
@@ -88,10 +83,6 @@ impl ServerManager {
 
     pub fn get_servers(&self, group: &str) -> &Vec<Server> {
         self.servers.get(group).unwrap()
-    }
-
-    pub fn all(&self) -> &HashMap<String, Vec<Server>> {
-        &self.servers
     }
 }
 
@@ -104,6 +95,15 @@ impl Manager for ServerManager {
         } else {
             self.servers.insert(s.group.clone(), vec![s]);
         }
+    }
+
+    fn find(&self, name: &str) -> Option<&Self::Item> {
+        for (_, servers) in self.servers.iter() {
+            if let Some(idx) = servers.iter().position(|r| r.name == name) {
+                return servers.get(idx);
+            }
+        }
+        None
     }
 }
 
@@ -121,14 +121,12 @@ impl Manager for CredentialManager {
     fn add(&mut self, a: Account) {
         self.accounts.push(a);
     }
-}
 
-impl CredentialManager {
-    pub fn find(&self, name: &str) -> &Account {
+    fn find(&self, name: &str) -> Option<&Self::Item> {
         if let Some(idx) = self.accounts.iter().position(|r| r.name == name) {
-            return self.accounts.get(idx).unwrap();
+            return self.accounts.get(idx);
         }
-        panic!("No account found for user `{}`", name);
+        None
     }
 }
 
@@ -148,7 +146,7 @@ mod test {
         );
         s_manager.add(s);
 
-        assert_eq!(s_manager.find("test").name, "test");
+        assert_eq!(s_manager.find("test").unwrap().name, "test");
         assert_eq!(s_manager.groups(), vec!["default"]);
     }
 
@@ -158,6 +156,6 @@ mod test {
         let account = Account::new("root");
         c_manager.add(account);
 
-        assert_eq!(c_manager.find("root").name, "root");
+        assert_eq!(c_manager.find("root").unwrap().name, "root");
     }
 }
