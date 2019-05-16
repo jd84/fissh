@@ -84,6 +84,10 @@ impl ServerManager {
     pub fn get_servers(&self, group: &str) -> &Vec<Server> {
         self.servers.get(group).unwrap()
     }
+
+    pub fn all(&self) -> &HashMap<String, Vec<Server>> {
+        &self.servers
+    }
 }
 
 impl Manager for ServerManager {

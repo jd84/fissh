@@ -1,9 +1,13 @@
 extern crate clap;
+extern crate pnet;
+extern crate pnet_macros_support;
+extern crate rand;
 
 mod config;
 mod server;
 mod process;
 mod args;
+mod net;
 
 use std::env;
 use std::path::Path;
@@ -26,11 +30,9 @@ fn main() -> Result<(), ConfigError> {
     let config = config::Config::from_file(config_file)?;
 
     if matches.is_present("HOST_OR_GROUP") && matches.is_present("TO_OR_FROM") {
-    // if matches.is_present("transfer") {
         let src = matches.value_of("HOST_OR_GROUP").unwrap();
         let dest = matches.value_of("TO_OR_FROM").unwrap();
 
-        // transfer from server
         let trans;
         let account;
         let server;
@@ -65,6 +67,19 @@ fn main() -> Result<(), ConfigError> {
         return Ok(());
     }
 
+    if matches.is_present("status") {
+        let mut pinger = net::Pinger::new();
+        for (_, servers) in config.server_manager().all().iter() {
+            for server in servers.iter() {
+                pinger.add_server(server);
+            }
+        }
+
+        pinger.send_icmp();
+        
+        return Ok(());
+    }
+
     if matches.is_present("list") {
         match matches.value_of("HOST_OR_GROUP") {
             Some(group) => print_servers(group, config.server_manager().get_servers(group)),
@@ -82,7 +97,6 @@ fn main() -> Result<(), ConfigError> {
         let account = config.credential_manager().find(&server.users[0]).unwrap();
         connect(server, account);
     }
-
 
     Ok(())
 }
