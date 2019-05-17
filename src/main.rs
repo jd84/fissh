@@ -103,9 +103,6 @@ fn main() -> Result<(), ConfigError> {
         match matches.value_of("HOST_OR_GROUP") {
             Some(group) => print_servers(group, config.server_manager().get_server_group(group)),
             None => {
-                // for group in config.server_manager().groups() {
-                //     print_servers(group, config.server_manager().get_servers(group));
-                // }
                 for group in config.server_manager().get_groups() {
                     print_servers(group, config.server_manager().get_server_group(group));
                 }
