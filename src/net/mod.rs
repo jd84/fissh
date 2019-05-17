@@ -49,8 +49,12 @@ impl Pinger {
     }
 
     pub fn add_server(&mut self, server: &Server) {
-        let host = resolve_host(&server.host);
-        self.addrs.insert(host, false);
+        if let Some(host) = resolve_host(&server.host) {
+            self.addrs.insert(host, false);
+        }
+        else {
+            // server cannot bechecked
+        }
     }
 
     pub fn send_icmp(&mut self) {
@@ -106,14 +110,14 @@ impl Pinger {
     }   
 }
 
-pub fn resolve_host(host: &str) -> IpAddr {
+pub fn resolve_host(host: &str) -> Option<IpAddr> {
     let sock_addr = format!("{}:0", host);
-    let addrs = sock_addr.to_socket_addrs()
+    match sock_addr.to_socket_addrs()
         .map(|iter| 
         iter.map(|socket_address| socket_address.ip())
             .collect::<Vec<_>>()
-        )
-        .unwrap();
-        
-    addrs[0]
+        ) {
+            Ok(addrs) => Some(addrs[0]),
+            Err(_) => None, // Lookup failed
+        }
 }
