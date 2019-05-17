@@ -77,6 +77,7 @@ impl Pinger {
                         _ => {},
                     }
                 },
+                
                 Err(_) => {
                     break
                 }

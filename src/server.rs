@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use slot::Slot;
 
 pub trait Manager {
     type Item;
@@ -29,6 +30,7 @@ pub struct Account {
 }
 
 pub struct ServerManager {
+    s: Slot<Server>,
     servers: HashMap<String, Vec<Server>>,
 }
 
@@ -68,6 +70,7 @@ impl Default for ServerManager {
     fn default() -> Self {
         ServerManager {
             servers: HashMap::new(),
+            s: Slot::new(),
         }
     }
 }

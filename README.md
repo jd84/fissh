@@ -96,3 +96,4 @@ To edit you config you can call `russh -e` and your favorite editor will start. 
 ## Thanks
 
 Thanks to https://github.com/japaric/trust for CI templates!
+Thanks to https://crates.io/crates/slab

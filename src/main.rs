@@ -2,6 +2,7 @@ extern crate clap;
 extern crate pnet;
 extern crate pnet_macros_support;
 extern crate rand;
+extern crate slot;
 
 mod config;
 mod server;

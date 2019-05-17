@@ -357,6 +357,7 @@ dependencies = [
  "pnet 0.22.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pnet_macros_support 0.22.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slot 0.1.0",
  "yaml-rust 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -369,6 +370,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "serde"
 version = "1.0.91"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "slot"
+version = "0.1.0"
 
 [[package]]
 name = "strsim"

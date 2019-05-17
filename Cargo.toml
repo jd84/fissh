@@ -10,3 +10,4 @@ yaml-rust = "0.4.3"
 pnet = "0.22.0"
 pnet_macros_support = "0.22.0"
 rand = "0.6.5"
+slot = { path = "lib/slot" }
