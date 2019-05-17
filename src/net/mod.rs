@@ -48,16 +48,11 @@ impl Pinger {
         }
     }
 
-    pub fn add_server(&mut self, server: &Server) {
-        if let Some(host) = resolve_host(&server.host) {
-            self.addrs.insert(host, false);
-        }
-        else {
-            // server cannot bechecked
-        }
+    pub fn add_server(&mut self, host: IpAddr) {
+        self.addrs.insert(host, false);
     }
 
-    pub fn send_icmp(&mut self) {
+    pub fn send_icmp(&mut self) -> &BTreeMap<IpAddr, bool> {
         self.start_icmp_receiver();
 
         for (addr, reply) in self.addrs.iter_mut() {
@@ -87,6 +82,7 @@ impl Pinger {
         for (addr, seen) in self.addrs.iter() {
             println!("IP: {} Reply: {}", addr, seen);
         }
+        &self.addrs
     }
 
     fn start_icmp_receiver(&self) {

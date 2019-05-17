@@ -3,7 +3,8 @@ extern crate pnet;
 extern crate pnet_macros_support;
 extern crate rand;
 extern crate slot;
-
+extern crate colored;
+    
 mod config;
 mod server;
 mod process;
@@ -12,7 +13,7 @@ mod net;
 
 use std::env;
 use std::path::Path;
-
+use colored::*;
 use config::ConfigError;
 use process::{Process, Mode, Transfer};
 use server::{Account, Server, Manager};
@@ -28,7 +29,9 @@ fn main() -> Result<(), ConfigError> {
     let config_file = matches
         .value_of("config")
         .unwrap_or(default_file.to_str().unwrap());
-    let config = config::Config::from_file(config_file)?;
+    let mut config = config::Config::from_file(config_file)?;
+
+    let (server_manager, cretential_manager) = config.get_managers();
 
     if matches.is_present("HOST_OR_GROUP") && matches.is_present("TO_OR_FROM") {
         let src = matches.value_of("HOST_OR_GROUP").unwrap();
@@ -40,13 +43,13 @@ fn main() -> Result<(), ConfigError> {
 
         if src.contains(":") {
             let src_parts: Vec<&str> = src.split(":").collect();
-            server = config.server_manager().find(&src_parts[0]).unwrap();
-            account = config.credential_manager().find(&server.users[0]).unwrap();
+            server = server_manager.find(&src_parts[0]).unwrap();
+            account = cretential_manager.find(&server.users[0]).unwrap();
             trans = Transfer::FromHost(server, (&src_parts[1], dest));
         } else {
             let dest_parts: Vec<&str> = dest.split(":").collect();
-            server = config.server_manager().find(&dest_parts[0]).unwrap();
-            account = config.credential_manager().find(&server.users[0]).unwrap();
+            server = server_manager.find(&dest_parts[0]).unwrap();
+            account = cretential_manager.find(&server.users[0]).unwrap();
             trans = Transfer::ToHost(server, (src, &dest_parts[1]));
         }
 
@@ -70,23 +73,42 @@ fn main() -> Result<(), ConfigError> {
 
     if matches.is_present("status") {
         let mut pinger = net::Pinger::new();
-        for (_, servers) in config.server_manager().all().iter() {
-            for server in servers.iter() {
-                pinger.add_server(server);
+        for (_, server) in server_manager.get_servers_mut() {
+            match net::resolve_host(&server.host) {
+                Some(ip) => {
+                    server.ip = Some(ip);
+                    pinger.add_server(ip);
+                },
+                _ => {},
+            }
+            
+        }
+
+        let addrs = pinger.send_icmp();
+        for (_, server) in server_manager.get_servers_mut() {
+            if let Some(ip) = server.ip {
+                if addrs.contains_key(&ip) {
+                    server.checked = addrs[&ip];
+                }
             }
         }
 
-        pinger.send_icmp();
+        for group in config.server_manager().get_groups() {
+            print_servers(group, config.server_manager().get_server_group(group));
+        }
         
         return Ok(());
     }
 
     if matches.is_present("list") {
         match matches.value_of("HOST_OR_GROUP") {
-            Some(group) => print_servers(group, config.server_manager().get_servers(group)),
+            Some(group) => print_servers(group, config.server_manager().get_server_group(group)),
             None => {
-                for group in config.server_manager().groups() {
-                    print_servers(group, config.server_manager().get_servers(group));
+                // for group in config.server_manager().groups() {
+                //     print_servers(group, config.server_manager().get_servers(group));
+                // }
+                for group in config.server_manager().get_groups() {
+                    print_servers(group, config.server_manager().get_server_group(group));
                 }
             }
         }
@@ -137,13 +159,16 @@ fn edit(program: &str, path: &str) {
     println!("Thanks for using russh!");
 }
 
-fn print_servers(group: &str, servers: &Vec<Server>) {
+fn print_servers(group: &str, servers: Vec<(usize, &server::Server)>) {
     println!("{}\n", group);
 
     let mut i = 0;
-    for server in servers {
+    for (_, server) in servers {
         i += 1;
-        let server_name = format!("{} ({})", server.name, server.host);
+        let mut server_name = format!("{} ({})", server.name, server.host);
+        if server.checked {
+            server_name = format!("{}", server_name.green());
+        }
         if i % 4 == 0 {
             println!("\t{0: <40}", server_name);
         } else {
