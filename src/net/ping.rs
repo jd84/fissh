@@ -1,11 +1,11 @@
-use std::net::{IpAddr};
-use rand::random;
-use pnet::transport::TransportSender;
-use pnet::packet::icmp::{IcmpTypes};
-use pnet::packet::icmp::{echo_request};
+use pnet::packet::icmp::echo_request;
+use pnet::packet::icmp::IcmpTypes;
 use pnet::packet::Packet;
+use pnet::transport::TransportSender;
 use pnet::util;
 use pnet_macros_support::types::*;
+use rand::random;
+use std::net::IpAddr;
 
 pub fn send_echo(tx: &mut TransportSender, addr: IpAddr) {
     // Allocate enough space for a new packet

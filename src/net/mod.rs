@@ -1,24 +1,22 @@
 pub mod ping;
 
-use super::server::Server;
-
-use std::time::{Duration};
-use std::net::{IpAddr};
-use std::sync::{Arc, Mutex};
-use std::sync::mpsc::{self, Sender, Receiver};
-use std::collections::BTreeMap;
-use std::thread;
-use pnet::transport::{icmp_packet_iter};
+use pnet::packet::ip::IpNextHeaderProtocols;
+use pnet::transport::icmp_packet_iter;
 use pnet::transport::transport_channel;
 use pnet::transport::TransportChannelType::Layer4;
-use pnet::transport::TransportProtocol::{Ipv4};
-use pnet::transport::{TransportSender, TransportReceiver};
-use pnet::packet::ip::IpNextHeaderProtocols;
+use pnet::transport::TransportProtocol::Ipv4;
+use pnet::transport::{TransportReceiver, TransportSender};
+use std::collections::BTreeMap;
+use std::net::IpAddr;
 use std::net::ToSocketAddrs;
+use std::sync::mpsc::{self, Receiver, Sender};
+use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::Duration;
 
 enum PingResult {
     TimeOut(IpAddr),
-    Receive{addr: IpAddr},
+    Receive { addr: IpAddr },
 }
 
 pub struct Pinger {
@@ -62,20 +60,16 @@ impl Pinger {
 
         loop {
             match self.thread_rx.recv_timeout(Duration::from_millis(100)) {
-                Ok(result) => {
-                    match result {
-                        PingResult::Receive{addr} => {
-                            if let Some(reply) = self.addrs.get_mut(&addr) {
-                                *reply = true;
-                            }
-                        },
-                        _ => {},
+                Ok(result) => match result {
+                    PingResult::Receive { addr } => {
+                        if let Some(reply) = self.addrs.get_mut(&addr) {
+                            *reply = true;
+                        }
                     }
+                    _ => {}
                 },
-                
-                Err(_) => {
-                    break
-                }
+
+                Err(_) => break,
             }
         }
 
@@ -94,27 +88,24 @@ impl Pinger {
             let mut iter = icmp_packet_iter(&mut receiver);
             loop {
                 match iter.next() {
-                    Ok((_, addr)) => {
-                        match thread_tx.send(PingResult::Receive{addr: addr}) {
-                            Ok(_) => {},
-                            Err(e) => panic!("error: {}", e),
-                        }
+                    Ok((_, addr)) => match thread_tx.send(PingResult::Receive { addr: addr }) {
+                        Ok(_) => {}
+                        Err(e) => panic!("error: {}", e),
                     },
                     Err(e) => panic!("error: {:?}", e),
                 }
             }
         });
-    }   
+    }
 }
 
 pub fn resolve_host(host: &str) -> Option<IpAddr> {
     let sock_addr = format!("{}:0", host);
-    match sock_addr.to_socket_addrs()
-        .map(|iter| 
+    match sock_addr.to_socket_addrs().map(|iter| {
         iter.map(|socket_address| socket_address.ip())
             .collect::<Vec<_>>()
-        ) {
-            Ok(addrs) => Some(addrs[0]),
-            Err(_) => None, // Lookup failed
-        }
+    }) {
+        Ok(addrs) => Some(addrs[0]),
+        Err(_) => None, // Lookup failed
+    }
 }

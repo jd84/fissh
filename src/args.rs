@@ -41,5 +41,5 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
                 .long("status"),
         )
         .get_matches();
-        matches
+    matches
 }

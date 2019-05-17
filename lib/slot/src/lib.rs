@@ -45,14 +45,14 @@ impl<T> Slot<T> {
         };
 
         for i in 0..capacity {
-            slot.entries.push(Entry::Empty(i+1));
+            slot.entries.push(Entry::Empty(i + 1));
         }
 
         slot
     }
 
     pub fn insert(&mut self, val: T) -> usize {
-        let key = self.next;        
+        let key = self.next;
         self.insert_at(key, val);
 
         key
@@ -60,17 +60,17 @@ impl<T> Slot<T> {
 
     fn insert_at(&mut self, key: usize, val: T) {
         self.len += 1;
-        
+
         if key == self.entries.len() {
             self.entries.push(Entry::Used(val));
             self.next = key + 1;
         } else {
             let prev = std::mem::replace(&mut self.entries[key], Entry::Used(val));
-            
+
             match prev {
                 Entry::Empty(next) => {
                     self.next = next;
-                },
+                }
                 _ => unreachable!(),
             }
         }

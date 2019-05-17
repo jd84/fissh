@@ -1,22 +1,22 @@
 extern crate clap;
+extern crate colored;
 extern crate pnet;
 extern crate pnet_macros_support;
 extern crate rand;
 extern crate slot;
-extern crate colored;
-    
-mod config;
-mod server;
-mod process;
-mod args;
-mod net;
 
-use std::env;
-use std::path::Path;
+mod args;
+mod config;
+mod net;
+mod process;
+mod server;
+
 use colored::*;
 use config::ConfigError;
-use process::{Process, Mode, Transfer};
-use server::{Account, Server, Manager};
+use process::{Mode, Process, Transfer};
+use server::{Account, Manager, Server};
+use std::env;
+use std::path::Path;
 
 fn main() -> Result<(), ConfigError> {
     let matches = args::get_matches();
@@ -67,7 +67,7 @@ fn main() -> Result<(), ConfigError> {
                 println!("Specify an editor to use this feature!");
             }
         }
-        
+
         return Ok(());
     }
 
@@ -78,10 +78,9 @@ fn main() -> Result<(), ConfigError> {
                 Some(ip) => {
                     server.ip = Some(ip);
                     pinger.add_server(ip);
-                },
-                _ => {},
+                }
+                _ => {}
             }
-            
         }
 
         let addrs = pinger.send_icmp();
@@ -96,7 +95,7 @@ fn main() -> Result<(), ConfigError> {
         for group in config.server_manager().get_groups() {
             print_servers(group, config.server_manager().get_server_group(group));
         }
-        
+
         return Ok(());
     }
 
@@ -135,7 +134,9 @@ fn init() {
 fn connect(server: &Server, account: &Account) {
     println!("Start SSH for {} as {}", server.host, account.name);
 
-    let mut ssh = Process::new(Mode::SSH).with_ssh_args(server, account).build();
+    let mut ssh = Process::new(Mode::SSH)
+        .with_ssh_args(server, account)
+        .build();
     ssh.run();
 
     println!("Thanks for using russh!");
@@ -144,7 +145,9 @@ fn connect(server: &Server, account: &Account) {
 fn transfer(server: &Server, account: &Account, trans: Transfer) {
     println!("Start SCP for {} as {}", server.host, account.name);
 
-    let mut scp = Process::new(Mode::SCP).with_scp_args(account, trans).build();
+    let mut scp = Process::new(Mode::SCP)
+        .with_scp_args(account, trans)
+        .build();
     scp.run();
 
     println!("Thanks for using russh!");
@@ -153,7 +156,9 @@ fn transfer(server: &Server, account: &Account, trans: Transfer) {
 fn edit(program: &str, path: &str) {
     println!("Start {} to edit russh.yml", program);
 
-    let mut editor = Process::new(Mode::Editor(program.to_owned())).with_editor_args(path).build();
+    let mut editor = Process::new(Mode::Editor(program.to_owned()))
+        .with_editor_args(path)
+        .build();
     editor.run();
 
     println!("Thanks for using russh!");

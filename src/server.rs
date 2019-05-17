@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use slot::Slot;
+use std::collections::HashMap;
 use std::net::IpAddr;
 
 pub trait Manager {
@@ -82,7 +82,7 @@ impl Default for ServerManager {
 
 impl ServerManager {
     pub fn get_groups(&self) -> Vec<&String> {
-        self.groups.iter().map(|(g,_)| g ).collect::<Vec<_>>()
+        self.groups.iter().map(|(g, _)| g).collect::<Vec<_>>()
     }
 
     pub fn get_servers(&self) -> Vec<(usize, &Server)> {
@@ -95,7 +95,10 @@ impl ServerManager {
 
     pub fn get_server_group(&self, name: &str) -> Vec<(usize, &Server)> {
         let keys = self.groups.get(name).unwrap();
-        self.servers.iter().filter(|(k, _)| keys.contains(k)).collect()
+        self.servers
+            .iter()
+            .filter(|(k, _)| keys.contains(k))
+            .collect()
     }
 }
 
