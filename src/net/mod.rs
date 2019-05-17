@@ -49,9 +49,8 @@ impl Pinger {
     }
 
     pub fn add_server(&mut self, server: &Server) {
-        let sock_addr = format!("{}:0", server.host);
-        let addrs = sock_addr.to_socket_addrs().map(|iter| iter.map(|socket_address| socket_address.ip()).collect::<Vec<_>>()).unwrap();
-        self.addrs.insert(addrs[0], false);
+        let host = resolve_host(&server.host);
+        self.addrs.insert(host, false);
     }
 
     pub fn send_icmp(&mut self) {
@@ -105,4 +104,16 @@ impl Pinger {
             }
         });
     }   
+}
+
+pub fn resolve_host(host: &str) -> IpAddr {
+    let sock_addr = format!("{}:0", host);
+    let addrs = sock_addr.to_socket_addrs()
+        .map(|iter| 
+        iter.map(|socket_address| socket_address.ip())
+            .collect::<Vec<_>>()
+        )
+        .unwrap();
+        
+    addrs[0]
 }
