@@ -13,7 +13,7 @@ matrix:
   - env: TARGET=x86_64-unknown-linux-musl
   - env: TARGET=x86_64-apple-darwin
     os: osx
-  - env: TARGET=x86_64-pc-windows-gnu
+#   - env: TARGET=x86_64-pc-windows-gnu
 before_install:
 - set -e
 - rustup self update

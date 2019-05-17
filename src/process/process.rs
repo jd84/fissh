@@ -1,5 +1,5 @@
+use super::server::{Account, Auth, Server};
 use std::process::Command;
-use super::server::{Server, Account, Auth};
 
 /// Struct to build a Process
 pub struct ProcessBuilder {
@@ -37,8 +37,8 @@ impl ProcessBuilder {
             Auth::PublicKey(ref path) => {
                 args.push("-i");
                 args.push(path);
-            },
-            _ => {},
+            }
+            _ => {}
         }
 
         let conn = format!("{}@{}", account.name, server.host);
@@ -55,22 +55,22 @@ impl ProcessBuilder {
             Auth::PublicKey(ref path) => {
                 args.push("-i");
                 args.push(path);
-            },
-            _ => {},
+            }
+            _ => {}
         }
 
         let conn;
-        
+
         match trans {
             Transfer::FromHost(server, targets) => {
                 let host_file = format!("{}:{}", server.host, targets.0);
                 conn = format!("{}@{}", account.name, host_file);
                 args.push(&conn);
                 args.push(targets.1);
-            },
+            }
             Transfer::ToHost(server, targets) => {
                 let host_file = format!("{}:{}", server.host, targets.1);
-                args.push(targets.0);                
+                args.push(targets.0);
                 conn = format!("{}@{}", account.name, host_file);
                 args.push(&conn);
             }
@@ -103,22 +103,16 @@ impl Process {
         match mode {
             Mode::SCP => {
                 cmd = Command::new("scp");
-            },
+            }
             Mode::SSH => {
                 cmd = Command::new("ssh");
-            },
-            Mode::Editor(prog) => {
-                cmd = Command::new(prog)
             }
+            Mode::Editor(prog) => cmd = Command::new(prog),
         }
 
-        let p = Process {
-            cmd: cmd,
-        };
+        let p = Process { cmd: cmd };
 
-        ProcessBuilder {
-            process: p,
-        }
+        ProcessBuilder { process: p }
     }
 
     /// Execute the process and wait

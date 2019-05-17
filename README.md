@@ -26,7 +26,7 @@ curl -LSfs https://japaric.github.io/trust/install.sh | \
 
 ### Pre-build Binaries
 
-Pre-build binaries for Linux, Windows and MacOS can be found on the release page.
+Pre-build binaries for Linux and MacOS can be found on the release page.
 
 ## Quick Start
 
@@ -88,13 +88,12 @@ To open a ssh connection to you server run `russh vm-01`.
 
 To transfer files from or to a server `russh` supports scp.
 
-Transfer a file to a server run `russh -t /path/to/file.txt vm-01:/path/to/dest.txt` 
-Or download a file from a server `russh -t vm-01:/path/to/file.txt .`
-
-The Parameter `-t` tells `russh` that you would transfer a file. In the feature maybe this parameter will be removed, so `russh` can auto detect between ssh and scp connections, but for now the `-t` is required.
+Transfer a file to a server run `russh /path/to/file.txt vm-01:/path/to/dest.txt` 
+Or download a file from a server `russh vm-01:/path/to/file.txt .`
 
 To edit you config you can call `russh -e` and your favorite editor will start. The parameter `-e` consumes the value configured under `editor`.
 
 ## Thanks
 
 Thanks to https://github.com/japaric/trust for CI templates!
+Thanks to https://crates.io/crates/slab

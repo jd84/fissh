@@ -1,4 +1,6 @@
+use slot::Slot;
 use std::collections::HashMap;
+use std::net::IpAddr;
 
 pub trait Manager {
     type Item;
@@ -16,6 +18,8 @@ pub struct Server {
     pub port: u32,
     pub users: Vec<String>,
     pub group: String,
+    pub ip: Option<IpAddr>,
+    pub checked: bool,
 }
 
 pub enum Auth {
@@ -29,7 +33,8 @@ pub struct Account {
 }
 
 pub struct ServerManager {
-    servers: HashMap<String, Vec<Server>>,
+    groups: HashMap<String, Vec<usize>>,
+    servers: Slot<Server>,
 }
 
 pub struct CredentialManager {
@@ -60,6 +65,8 @@ impl Server {
             port,
             users,
             group: group.to_owned(),
+            ip: None,
+            checked: false,
         }
     }
 }
@@ -67,22 +74,31 @@ impl Server {
 impl Default for ServerManager {
     fn default() -> Self {
         ServerManager {
-            servers: HashMap::new(),
+            servers: Slot::new(),
+            groups: HashMap::new(),
         }
     }
 }
 
 impl ServerManager {
-    pub fn groups(&self) -> Vec<&str> {
-        let mut groups = Vec::with_capacity(self.servers.len());
-        for (group, _) in self.servers.iter() {
-            groups.push(group.as_str());
-        }
-        groups
+    pub fn get_groups(&self) -> Vec<&String> {
+        self.groups.iter().map(|(g, _)| g).collect::<Vec<_>>()
     }
 
-    pub fn get_servers(&self, group: &str) -> &Vec<Server> {
-        self.servers.get(group).unwrap()
+    pub fn get_servers(&self) -> Vec<(usize, &Server)> {
+        self.servers.iter().collect()
+    }
+
+    pub fn get_servers_mut(&mut self) -> Vec<(usize, &mut Server)> {
+        self.servers.iter_mut().collect()
+    }
+
+    pub fn get_server_group(&self, name: &str) -> Vec<(usize, &Server)> {
+        let keys = self.groups.get(name).unwrap();
+        self.servers
+            .iter()
+            .filter(|(k, _)| keys.contains(k))
+            .collect()
     }
 }
 
@@ -90,18 +106,19 @@ impl Manager for ServerManager {
     type Item = Server;
 
     fn add(&mut self, s: Server) {
-        if let Some(storage) = self.servers.get_mut(&s.group) {
-            storage.push(s);
+        if let Some(group) = self.groups.get_mut(&s.group) {
+            let key = self.servers.insert(s);
+            group.push(key);
         } else {
-            self.servers.insert(s.group.clone(), vec![s]);
+            let group = s.group.clone();
+            let key = self.servers.insert(s);
+            self.groups.insert(group, vec![key]);
         }
     }
 
     fn find(&self, name: &str) -> Option<&Self::Item> {
-        for (_, servers) in self.servers.iter() {
-            if let Some(idx) = servers.iter().position(|r| r.name == name) {
-                return servers.get(idx);
-            }
+        if let Some(key) = self.servers.iter().position(|(_, s)| s.name == name) {
+            return Some(self.servers.get(key));
         }
         None
     }
@@ -147,7 +164,6 @@ mod test {
         s_manager.add(s);
 
         assert_eq!(s_manager.find("test").unwrap().name, "test");
-        assert_eq!(s_manager.groups(), vec!["default"]);
     }
 
     #[test]

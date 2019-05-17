@@ -21,7 +21,7 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
             Arg::with_name("HOST_OR_GROUP")
                 .help("The host used for the next connection")
                 .index(1)
-                .required_unless_one(&["list", "Version", "edit", "autocomplete"]),
+                .required_unless_one(&["list", "Version", "edit", "status"]),
         )
         .arg(
             Arg::with_name("TO_OR_FROM")
@@ -34,6 +34,12 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
                 .short("e")
                 .long("edit"),
         )
+        .arg(
+            Arg::with_name("status")
+                .help("List status for all configured servers.")
+                .short("s")
+                .long("status"),
+        )
         .get_matches();
-        matches
+    matches
 }

@@ -64,6 +64,10 @@ impl Config {
         &self.servers
     }
 
+    pub fn get_managers(&mut self) -> (&mut ServerManager, &mut CredentialManager) {
+        (&mut self.servers, &mut self.credentials)
+    }
+
     pub fn credential_manager(&self) -> &CredentialManager {
         &self.credentials
     }
