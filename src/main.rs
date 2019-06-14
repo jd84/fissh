@@ -5,6 +5,9 @@ extern crate pnet_macros_support;
 extern crate rand;
 extern crate slot;
 
+#[macro_use] 
+extern crate prettytable;
+
 mod args;
 mod config;
 mod net;
@@ -15,6 +18,8 @@ use colored::*;
 use config::ConfigError;
 use process::{Mode, Process, Transfer};
 use server::{Account, Manager, Server};
+use prettytable::Table;
+
 use std::env;
 use std::path::Path;
 
@@ -101,11 +106,29 @@ fn main() -> Result<(), ConfigError> {
 
     if matches.is_present("list") {
         match matches.value_of("HOST_OR_GROUP") {
-            Some(group) => print_servers(group, config.server_manager().get_server_group(group)),
-            None => {
-                for group in config.server_manager().get_groups() {
-                    print_servers(group, config.server_manager().get_server_group(group));
+            Some(group) => {
+                // print_servers(group, config.server_manager().get_server_group(group)),
+                let mut table = Table::new();
+                table.add_row(row!["Server-Group", "Hosts"]);
+
+                let mut cell_str = String::from("");
+                for (_, server) in config.server_manager().get_server_group(group) {
+                    cell_str += &format!("{} ({})\n", server.name, server.host);
                 }
+                table.add_row(row![group, cell_str]);
+                table.printstd();
+            },
+            None => {
+                let mut table = Table::new();
+                table.add_row(row!["Server-Group", "Hosts"]);
+                for group in config.server_manager().get_groups() {
+                    let mut cell_str = String::from("");
+                    for (_, server) in config.server_manager().get_server_group(group) {
+                        cell_str += &format!("{} ({})\n", server.name, server.host);
+                    }
+                    table.add_row(row![group, cell_str]);
+                }
+                table.printstd();
             }
         }
         std::process::exit(0);

@@ -11,4 +11,5 @@ pnet = "0.22.0"
 pnet_macros_support = "0.22.0"
 rand = "0.6.5"
 colored = "1.8"
+prettytable-rs = "0.8.0"
 slot = { path = "lib/slot" }
