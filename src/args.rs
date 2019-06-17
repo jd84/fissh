@@ -2,7 +2,7 @@ use clap::{App, Arg};
 
 pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
     let matches = App::new("russh")
-        .version("0.0.5")
+        .version("0.0.6")
         .author("Jan D. <jd84@protonmail.com>")
         .about("russh is a ssh wrapper and connection manager.")
         .arg(
