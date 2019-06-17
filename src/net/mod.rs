@@ -73,9 +73,6 @@ impl Pinger {
             }
         }
 
-        for (addr, seen) in self.addrs.iter() {
-            println!("IP: {} Reply: {}", addr, seen);
-        }
         &self.addrs
     }
 
