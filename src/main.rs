@@ -97,9 +97,20 @@ fn main() -> Result<(), ConfigError> {
             }
         }
 
+        let mut table = Table::new();
+        table.add_row(row!["Server-Group", "Hosts"]);
         for group in config.server_manager().get_groups() {
-            print_servers(group, config.server_manager().get_server_group(group));
+            let mut cell_str = String::from("");
+            for (_, server) in config.server_manager().get_server_group(group) {
+                if server.checked {
+                    cell_str += &format!("{} ({})\n", server.name.green(), server.host);
+                } else {
+                    cell_str += &format!("{} ({})\n", server.name.red(), server.host);
+                }
+            }
+            table.add_row(row![group, cell_str]);
         }
+        table.printstd();
 
         return Ok(());
     }
