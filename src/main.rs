@@ -5,20 +5,23 @@ extern crate pnet_macros_support;
 extern crate rand;
 extern crate slot;
 
-#[macro_use] 
+#[macro_use]
 extern crate prettytable;
 
 mod args;
+mod auth;
 mod config;
 mod net;
+mod parser;
 mod process;
 mod server;
 
 use colored::*;
 use config::ConfigError;
+use parser::parse_config_file;
+use prettytable::Table;
 use process::{Mode, Process, Transfer};
 use server::{Account, Manager, Server};
-use prettytable::Table;
 
 use std::env;
 use std::path::Path;
@@ -30,6 +33,7 @@ fn main() -> Result<(), ConfigError> {
 
     let mut default_file = env::var_os("HOME").unwrap();
     default_file.push("/.ssh/russh.yml");
+    parse_config_file(&default_file);
 
     let config_file = matches
         .value_of("config")
@@ -128,7 +132,7 @@ fn main() -> Result<(), ConfigError> {
                 }
                 table.add_row(row![group, cell_str]);
                 table.printstd();
-            },
+            }
             None => {
                 let mut table = Table::new();
                 table.add_row(row!["Server-Group", "Hosts"]);
