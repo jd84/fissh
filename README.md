@@ -91,8 +91,6 @@ To transfer files from or to a server `russh` supports scp.
 Transfer a file to a server run `russh /path/to/file.txt vm-01:/path/to/dest.txt` 
 Or download a file from a server `russh vm-01:/path/to/file.txt .`
 
-To edit you config you can call `russh -e` and your favorite editor will start. The parameter `-e` consumes the value configured under `editor`.
-
 ## Thanks
 
 Thanks to https://github.com/japaric/trust for CI templates!
