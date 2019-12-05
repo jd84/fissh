@@ -2,7 +2,7 @@ use clap::{App, Arg};
 
 pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
     App::new("russh")
-        .version("0.0.7")
+        .version("0.0.8")
         .author("Jan D. <jd84@protonmail.com>")
         .about("russh is a ssh wrapper and connection manager.")
         .arg(
@@ -34,7 +34,6 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
                 .help("Output formatting")
                 .possible_values(&["table", "none"])
                 .default_value("table")
-                .requires("list")
                 .takes_value(true),
         )
         .get_matches()
