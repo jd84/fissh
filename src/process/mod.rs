@@ -1,4 +1,4 @@
-mod process;
-use super::server;
+mod wrapper;
+use super::auth;
 
-pub use process::{Mode, Process, Transfer};
+pub use wrapper::{Mode, Process, Transfer};

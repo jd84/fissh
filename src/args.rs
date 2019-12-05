@@ -1,8 +1,8 @@
 use clap::{App, Arg};
 
 pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
-    let matches = App::new("russh")
-        .version("0.0.6")
+    App::new("russh")
+        .version("0.0.7")
         .author("Jan D. <jd84@protonmail.com>")
         .about("russh is a ssh wrapper and connection manager.")
         .arg(
@@ -21,7 +21,7 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
             Arg::with_name("HOST_OR_GROUP")
                 .help("The host used for the next connection")
                 .index(1)
-                .required_unless_one(&["list", "Version", "edit", "status"]),
+                .required_unless_one(&["list", "Version"]),
         )
         .arg(
             Arg::with_name("TO_OR_FROM")
@@ -29,17 +29,13 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
                 .index(2),
         )
         .arg(
-            Arg::with_name("edit")
-                .help("Open russh.yml in your favorite editor.")
-                .short("e")
-                .long("edit"),
+            Arg::with_name("format")
+                .short("f")
+                .help("Output formatting")
+                .possible_values(&["table", "none"])
+                .default_value("table")
+                .requires("list")
+                .takes_value(true),
         )
-        .arg(
-            Arg::with_name("status")
-                .help("List status for all configured servers.")
-                .short("s")
-                .long("status"),
-        )
-        .get_matches();
-    matches
+        .get_matches()
 }

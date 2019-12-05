@@ -1,15 +1,12 @@
 [package]
 name = "russh"
-version = "0.0.6"
+version = "0.0.7"
 authors = ["jan <jan@stdpixel.com>"]
 edition = "2018"
 
 [dependencies]
 clap = "2.32.0"
 yaml-rust = "0.4.3"
-pnet = "0.22.0"
-pnet_macros_support = "0.22.0"
-rand = "0.6.5"
 colored = "1.8"
 prettytable-rs = "0.8.0"
 slot = { path = "lib/slot" }
