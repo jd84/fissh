@@ -3,31 +3,24 @@ version: 1
 editor: nano
 
 credentials:
-    -   
-        User: admin_user
-        IdentityFile: ~/.ssh/private_key
-    -
-        User: pi
+  - User: admin_user
+    IdentityFile: ~/.ssh/private_key
+  - User: pi
 
 groups:
-    -
-        Name: home-network
-        Hosts:
-            -
-                Name: pollux
-                HostName: pollux.home-network.local
-                Port: 22
-                Users: [admin_user]
-            -
-                Name: pihole
-                HostName: pirategate.home-network.local
-                Port: 22
-                Users: [pi, admin_user]
-    -
-        Name: work-network
-        Hosts:
-            -
-                Name: vm-01
-                HostName: vm-01.srv.work-network.com
-                Port: 22
-                Users: [admin_user]
+  - Name: home-network
+    Hosts:
+      - Name: pollux
+        HostName: pollux.chaoshome.local
+        Port: 22
+        Users: [admin_user]
+      - Name: pihole
+        HostName: pirategate.chaoshome.local
+        Port: 22
+        Users: [pi, admin_user]
+  - Name: work-network
+    Hosts:
+      - Name: vm-01
+        HostName: vm-01.srv.work-network.com
+        Port: 22
+        Users: [admin_user]

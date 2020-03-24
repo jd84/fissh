@@ -2,11 +2,11 @@ use clap::{App, Arg};
 
 pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
     App::new("russh")
-        .version("0.0.8")
+        .version("0.1.0")
         .author("Jan D. <jd84@protonmail.com>")
         .about("russh is a ssh wrapper and connection manager.")
         .arg(
-            Arg::with_name("config")
+            Arg::with_name("CONFIG")
                 .short("c")
                 .help("The configuration file for russh. Default is `~/.russh/russh.yml`")
                 .takes_value(true),
