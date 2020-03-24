@@ -6,10 +6,11 @@ pub fn get_matches<'a>() -> clap::ArgMatches<'a> {
         .author("Jan D. <jd84@protonmail.com>")
         .about("russh is a ssh wrapper and connection manager.")
         .arg(
-            Arg::with_name("config")
+            Arg::with_name("CONFIG")
                 .short("c")
                 .help("The configuration file for russh. Default is `~/.russh/russh.yml`")
-                .takes_value(true),
+                .takes_value(true)
+                .default_value("~/.ssh/russh.yml"),
         )
         .arg(
             Arg::with_name("list")

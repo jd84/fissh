@@ -18,7 +18,6 @@ pub fn print_servers(sm: &ServerManager) {
 
 pub fn print_servers_raw(sm: &ServerManager) {
     for server in sm.get_servers() {
-        print!("{} ", server.name());
+        println!("{}", server.name());
     }
-    println!();
 }

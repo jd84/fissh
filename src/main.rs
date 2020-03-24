@@ -13,18 +13,13 @@ mod process;
 use parser::parse_config_file;
 use process::{Mode, Process, Transfer};
 
-use std::env;
 use std::error::Error;
-use std::path::Path;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let matches = args::get_matches();
 
-    init();
-
-    let mut default_file = env::var_os("HOME").unwrap();
-    default_file.push("/.ssh/russh.yml");
-    let sm = parse_config_file(&default_file)?;
+    let config_file = matches.value_of("CONFIG").unwrap();
+    let sm = parse_config_file(&config_file)?;
 
     if matches.is_present("list") {
         match matches.value_of("format").unwrap() {
@@ -33,22 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             _ => unimplemented!()
         }
     }
-
-    if let Some(host) = matches.value_of("HOST_OR_GROUP") {
-        let server = sm.get_server_by(&host).expect("host not found");
-        let identity = sm.get_identity(server.user()).expect("user not found");
-
-        println!("Start SSH for {} as {}", server.hostname(), identity.user());
-
-        let mut ssh = Process::new_builder(Mode::SSH)
-            .with_ssh_args(server, identity)
-            .build();
-
-        ssh.run();
-
-        println!("Thanks for using russh!");
-    }
-
+  
     if matches.is_present("HOST_OR_GROUP") && matches.is_present("TO_OR_FROM") {
         let src = matches.value_of("HOST_OR_GROUP").unwrap();
         let dest = matches.value_of("TO_OR_FROM").unwrap();
@@ -81,13 +61,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
-    Ok(())
-}
+    if let Some(host) = matches.value_of("HOST_OR_GROUP") {
+        let server = sm.get_server_by(&host).expect("host not found");
+        let identity = sm.get_identity(server.user()).expect("user not found");
 
-fn init() {
-    let mut config_dir = env::var_os("HOME").unwrap();
-    config_dir.push("/.russh");
-    if !Path::new(&config_dir).exists() {
-        std::fs::create_dir(&config_dir).unwrap();
+        println!("Start SSH for {} as {}", server.hostname(), identity.user());
+
+        let mut ssh = Process::new_builder(Mode::SSH)
+            .with_ssh_args(server, identity)
+            .build();
+
+        ssh.run();
+
+        println!("Thanks for using russh!");
     }
+
+    Ok(())
 }
