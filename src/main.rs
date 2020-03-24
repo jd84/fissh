@@ -12,15 +12,23 @@ mod process;
 
 use parser::parse_config_file;
 use process::{Mode, Process, Transfer};
+use auth::ServerManager;
 
+use std::env;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let matches = args::get_matches();
+    let sm: ServerManager;
 
-    let config_file = matches.value_of("CONFIG").unwrap();
-    let sm = parse_config_file(&config_file)?;
-
+    if let Some(config_file) = matches.value_of("CONFIG") {
+        sm = parse_config_file(&config_file)?;
+    } else {
+        let mut config_file = env::var_os("HOME").unwrap();
+        config_file.push("/.ssh/russh.yml");
+        sm = parse_config_file(&config_file)?;    
+    }
+    
     if matches.is_present("list") {
         match matches.value_of("format").unwrap() {
             "table" => print::print_servers(&sm),
