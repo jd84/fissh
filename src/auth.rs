@@ -32,10 +32,7 @@ impl Identity {
             Some(key) => AuthType::Key(key),
         };
 
-        Identity {
-            user: name,
-            auth,
-        }
+        Identity { user: name, auth }
     }
 
     pub fn user(&self) -> &str {
@@ -74,6 +71,10 @@ impl Server {
 
     pub fn user(&self) -> &str {
         &self.std_user
+    }
+
+    pub fn group(&self) -> &str {
+        &self.group
     }
 }
 

@@ -10,9 +10,9 @@ mod parser;
 mod print;
 mod process;
 
+use auth::ServerManager;
 use parser::parse_config_file;
 use process::{Mode, Process, Transfer};
-use auth::ServerManager;
 
 use std::env;
 use std::error::Error;
@@ -26,17 +26,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         let mut config_file = env::var_os("HOME").unwrap();
         config_file.push("/.ssh/russh.yml");
-        sm = parse_config_file(&config_file)?;    
+        sm = parse_config_file(&config_file)?;
     }
-    
+
     if matches.is_present("list") {
-        match matches.value_of("format").unwrap() {
-            "table" => print::print_servers(&sm),
-            "none" => print::print_servers_raw(&sm),
-            _ => unimplemented!()
+        if let Some(group) = matches.value_of("HOST_OR_GROUP") {
+            let servers = sm.get_servers_by(group);
+            print::print_server_group(&servers);
+
+            return Ok(());
+        } else {
+            match matches.value_of("format").unwrap() {
+                "table" => print::print_servers(&sm),
+                "none" => print::print_servers_raw(&sm),
+                _ => unimplemented!(),
+            }
         }
     }
-  
+
     if matches.is_present("HOST_OR_GROUP") && matches.is_present("TO_OR_FROM") {
         let src = matches.value_of("HOST_OR_GROUP").unwrap();
         let dest = matches.value_of("TO_OR_FROM").unwrap();
