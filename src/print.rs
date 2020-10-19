@@ -1,36 +1,53 @@
-use super::auth::{Server, ServerManager};
+use crate::{Format, Server, Servers};
 use prettytable::Table;
 
-pub fn print_servers(sm: &ServerManager) {
-    let mut table = Table::new();
-    table.add_row(row!["Server-Group", "Hosts"]);
-
-    for group in sm.get_groups() {
-        let mut cell_str = String::from("");
-        for server in sm.get_servers_by(&group) {
-            cell_str += &format!("{} ({})\n", server.name(), server.hostname());
+pub fn print_servers(servers: &Servers, format: &Format) {
+    match format {
+        Format::None => {
+            for (_, sg) in &servers.groups {
+                for server in &sg.servers {
+                    println!("{}", server.name);
+                }
+            }
         }
-        table.add_row(row![group, cell_str]);
-    }
+        Format::Pretty => {
+            let mut table = Table::new();
+            table.add_row(row!["Server Group", "Server", "Description"]);
 
-    table.printstd();
+            for (group, server_group) in &servers.groups {
+                let mut srv_str = String::new();
+                let mut desc_str = String::new();
+                for server in &server_group.servers {
+                    srv_str += &format!("{} ({})\n", server.name, server.hostname);
+                    desc_str += &format!("{}\n", server.description);
+                }
+                table.add_row(row![&group, srv_str, desc_str]);
+            }
+
+            table.printstd();
+        }
+    }
 }
 
-pub fn print_server_group(servers: &Vec<&Server>) {
-    let group = servers[0].group();
-    let mut table = Table::new();
-    table.add_row(row!["Group", "Hosts"]);
+pub fn print_server_group(group: &str, servers: &[Server], format: &Format) {
+    match format {
+        Format::None => {
+            for server in servers {
+                println!("{}", server.name);
+            }
+        }
+        Format::Pretty => {
+            let mut table = Table::new();
+            table.add_row(row!["Server Group", "Server", "Description"]);
 
-    let mut cell_str = String::from("");
-    for server in servers {
-        cell_str += &format!("{} ({})\n", server.name(), server.hostname());
-    }
-    table.add_row(row![group, cell_str]);
-    table.printstd();
-}
-
-pub fn print_servers_raw(sm: &ServerManager) {
-    for server in sm.get_servers() {
-        println!("{}", server.name());
+            let mut srv_str = String::new();
+            let mut desc_str = String::new();
+            for server in servers {
+                srv_str += &format!("{} ({})\n", server.name, server.hostname);
+                desc_str += &format!("{}\n", server.description);
+            }
+            table.add_row(row![&group, srv_str, desc_str]);
+            table.printstd();
+        }
     }
 }

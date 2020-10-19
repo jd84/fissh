@@ -1,12 +1,12 @@
 [package]
 name = "russh"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["jan <jan@stdpixel.com>"]
 edition = "2018"
 
 [dependencies]
 clap = "2.32.0"
-yaml-rust = "0.4.3"
 colored = "1.8"
-prettytable-rs = "0.8.0"
-slot = { path = "lib/slot" }
+prettytable-rs = "0.8"
+serde = { version = "1.0.114", features = ["derive"] }
+toml = "0.5.6"

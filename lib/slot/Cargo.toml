@@ -1,7 +1,0 @@
-[package]
-name = "slot"
-version = "0.1.0"
-authors = ["Jan Dinger <jan.dinger+gitlab@gogol-publishing.de>"]
-edition = "2018"
-
-[dependencies]
