@@ -20,7 +20,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             None => print_servers(&servers, &format),
         },
         RunMode::Ssh(host) => {
-            let (server, identity) = servers.server_with_identity(&host);
+            let (server, identity) = match servers.server_with_identity(&host) {
+                Some(x) => x,
+                None => {
+                    println!("server or identity not found for host: {}", host);
+                    return Ok(());
+                }
+            };
+
             let mut process = Process::new(ProcessMode::Ssh)
                 .with_ssh_args(&server, &identity)
                 .build();
@@ -32,7 +39,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             process.run();
         }
         RunMode::Scp(host, transfer) => {
-            let (server, identity) = servers.server_with_identity(&host);
+            let (server, identity) = match servers.server_with_identity(&host) {
+                Some(x) => x,
+                None => {
+                    println!("server or identity not found for host: {}", host);
+                    return Ok(());
+                }
+            };
+
             let mut process = Process::new(ProcessMode::Scp)
                 .with_scp_args(&server, identity, transfer)
                 .build();

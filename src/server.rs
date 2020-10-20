@@ -72,13 +72,21 @@ impl Servers {
         result
     }
 
-    pub fn server_with_identity(&self, name: &str) -> (&Server, &Identity) {
-        let server = self.find_by_name(name).unwrap();
-        let identity = self.identity(&server).unwrap();
-        (server, identity)
+    pub fn identity(&self, server: &Server) -> Option<&Identity> {
+        self.identities.get(&server.user)
     }
 
-    fn identity(&self, server: &Server) -> Option<&Identity> {
-        self.identities.get(&server.user)
+    pub fn server_with_identity(&self, name: &str) -> Option<(&Server, &Identity)> {
+        let server = match self.find_by_name(name) {
+            Some(s) => s,
+            None => return None,
+        };
+
+        let identity = match self.identity(&server) {
+            Some(s) => s,
+            None => return None,
+        };
+
+        Some((server, identity))
     }
 }
