@@ -13,15 +13,15 @@
 **Linux**
 
 ```bash
-curl -LSfs https://japaric.github.io/trust/install.sh | \
-  sudo sh -s -- --git jd84/russh --target x86_64-unknown-linux-gnu --to /usr/local/bin/
+curl -LSfs https://raw.githubusercontent.com/jd84/russh/master/install.sh | \
+  sudo sh -s -- --git jd84/russh --target x86_64-linux-gnu --to /usr/local/bin/
 ```
 
 **macOS**
 
 ```bash
 curl -LSfs https://japaric.github.io/trust/install.sh | \
-  sh -s -- --git jd84/russh --target x86_64-apple-darwin --to ~/bin/
+  sh -s -- --git jd84/russh --target darwin --to ~/bin/
 ```
 
 ### Pre-build Binaries
@@ -51,7 +51,7 @@ Example **russh.toml**
       user = "root"
       port = 22
       description = "Wordpress Webserver"
-      
+
   [groups.database]
     [[groups.database.servers]]
       name = "db-01"
