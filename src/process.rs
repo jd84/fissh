@@ -20,6 +20,7 @@ pub struct ProcessBuilder {
 }
 
 impl Process {
+    #[allow(clippy::new_ret_no_self)]
     pub fn new(mode: ProcessMode) -> ProcessBuilder {
         let cmd;
         match mode {

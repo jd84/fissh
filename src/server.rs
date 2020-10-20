@@ -61,7 +61,7 @@ impl Servers {
 
     pub fn find_by_name(&self, name: &str) -> Option<&Server> {
         let mut result = None;
-        for (_, sg) in &self.groups {
+        for sg in self.groups.values() {
             for server in &sg.servers {
                 if server.name == name {
                     result.replace(server);

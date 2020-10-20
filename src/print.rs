@@ -4,7 +4,7 @@ use prettytable::Table;
 pub fn print_servers(servers: &Servers, format: &Format) {
     match format {
         Format::None => {
-            for (_, sg) in &servers.groups {
+            for sg in servers.groups.values() {
                 for server in &sg.servers {
                     println!("{}", server.name);
                 }
@@ -19,9 +19,8 @@ pub fn print_servers(servers: &Servers, format: &Format) {
                 let mut desc_str = String::new();
                 for server in &server_group.servers {
                     srv_str += &format!("{} ({})\n", server.name, server.hostname);
-                    match server.description {
-                        Some(ref desc) => desc_str += &format!("{}\n", desc),
-                        None => {}
+                    if let Some(ref desc) = server.description {
+                        desc_str += &format!("{}\n", desc);
                     }
                 }
                 table.add_row(row![&group, srv_str, desc_str]);
@@ -47,9 +46,8 @@ pub fn print_server_group(group: &str, servers: &[Server], format: &Format) {
             let mut desc_str = String::new();
             for server in servers {
                 srv_str += &format!("{} ({})\n", server.name, server.hostname);
-                match server.description {
-                    Some(ref desc) => desc_str += &format!("{}\n", desc),
-                    None => {}
+                if let Some(ref desc) = server.description {
+                    desc_str += &format!("{}\n", desc);
                 }
             }
             table.add_row(row![&group, srv_str, desc_str]);

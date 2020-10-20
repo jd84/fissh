@@ -45,8 +45,8 @@ impl<'a> Application<'a> {
             let lhalf = self.args.value_of("host_or_group").unwrap();
             let rhalf = self.args.value_of("to_or_from").unwrap();
 
-            if lhalf.contains(":") {
-                let lparts: Vec<&str> = lhalf.split(":").collect();
+            if lhalf.contains(':') {
+                let lparts: Vec<&str> = lhalf.split(':').collect();
                 let host = lparts[0];
                 let dest = lparts[1];
                 let transfer = Transfer::FromHost {
@@ -54,8 +54,8 @@ impl<'a> Application<'a> {
                     to: rhalf,
                 };
                 return RunMode::Scp(host, transfer);
-            } else if rhalf.contains(":") {
-                let rparts: Vec<&str> = rhalf.split(":").collect();
+            } else if rhalf.contains(':') {
+                let rparts: Vec<&str> = rhalf.split(':').collect();
                 let host = rparts[0];
                 let dest = rparts[1];
                 let transfer = Transfer::ToHost {
@@ -73,7 +73,7 @@ impl<'a> Application<'a> {
 
     pub fn get_config_file(&self) -> String {
         let mut config_file = self.args.value_of("config").unwrap().to_string();
-        if config_file.contains("~") {
+        if config_file.contains('~') {
             config_file = config_file.replace("~", HOME);
         }
         config_file
