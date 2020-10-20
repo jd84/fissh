@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fs;
 use std::io::{self, Read};
 use std::path::Path;
@@ -42,7 +42,7 @@ pub struct ServerGroup {
 #[derive(Debug, Deserialize)]
 pub struct Servers {
     identities: HashMap<String, Identity>,
-    pub groups: HashMap<String, ServerGroup>,
+    pub groups: BTreeMap<String, ServerGroup>,
 }
 
 impl Servers {
