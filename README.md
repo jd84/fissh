@@ -21,7 +21,7 @@ curl -LSfs https://raw.githubusercontent.com/jd84/russh/master/install.sh | \
 
 ```bash
 curl -LSfs https://japaric.github.io/trust/install.sh | \
-  sh -s -- --git jd84/russh --target darwin --to ~/bin/
+  sh -s -- --git jd84/russh --target x86_64-apple-darwin --to ~/bin/
 ```
 
 ### Pre-build Binaries
