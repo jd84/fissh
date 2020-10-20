@@ -1,0 +1,49 @@
+name: Rust
+
+on: [push]
+  
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Install latest rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
+           
+      - name: Build
+        run: cargo build --all --release
+      
+      - name: Get the version
+        id: get_version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      
+      - name: Prepare release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: strip target/release/russh
+      
+      - name: Create zip file
+        uses: montudor/action-zip@v0.1.0
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          args: zip -qq -j target/release/russh-${{ steps.get_version.outputs.VERSION }}-x86_64-linux-gnu.zip target/release/russh
+            
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            target/release/russh-${{ steps.get_version.outputs.VERSION }}-x86_64-linux-gnu.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
