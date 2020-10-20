@@ -31,7 +31,7 @@ pub struct Server {
     pub hostname: String,
     pub user: String,
     pub port: u16,
-    pub description: String,
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
