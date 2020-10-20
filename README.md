@@ -51,7 +51,8 @@ Example **russh.toml**
       user = "root"
       port = 22
       description = "Wordpress Webserver"
-
+      
+  [groups.database]
     [[groups.database.servers]]
       name = "db-01"
       hostname = "db-01.localdomain.local"
