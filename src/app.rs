@@ -3,6 +3,7 @@ use clap::{App, Arg, ArgMatches};
 use std::env;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+const HOME: &str = env!("HOME");
 
 pub enum Format {
     Pretty,
@@ -70,13 +71,20 @@ impl<'a> Application<'a> {
         RunMode::Unknown
     }
 
-    pub fn get_config_file(&self) -> &str {
-        self.args.value_of("config").unwrap()
+    pub fn get_config_file(&self) -> String {
+        let mut config_file = self.args.value_of("config").unwrap().to_string();
+        if config_file.contains("~") {
+            config_file = config_file.replace("~", HOME);
+        }
+        config_file
     }
 }
 
 impl<'a> Default for Application<'a> {
     fn default() -> Application<'a> {
+        let mut default_config = HOME.to_owned();
+        default_config.push_str("/.ssh/russh.toml");
+
         let args = App::new("russh")
             .version(VERSION)
             .author("jd84 <jd84@protonmail.com>")
@@ -84,13 +92,13 @@ impl<'a> Default for Application<'a> {
             .arg(
                 Arg::with_name("config")
                     .short("c")
-                    .default_value("russh.toml")
+                    .default_value("~/.ssh/russh.toml")
                     .help("The configuration file for russh"),
             )
             .arg(
                 Arg::with_name("list")
                     .short("l")
-                    .help("Print available hosts"),
+                    .help("Prints available hosts"),
             )
             .arg(
                 Arg::with_name("format")
